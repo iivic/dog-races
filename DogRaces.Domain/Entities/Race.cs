@@ -45,8 +45,8 @@ public class Race
     public int[]? Result { get; private set; }
 
     // Navigation properties
-    public virtual ICollection<Bet> Bets { get; private set; } = null!;
-    public virtual ICollection<RaceOdds> RaceOdds { get; private set; } = null!;
+    public virtual ICollection<Bet> Bets { get; private set; } = [];
+    public virtual ICollection<RaceOdds> RaceOdds { get; private set; } = [];
 
     public bool HasResult() => Result != null;
     
@@ -119,6 +119,26 @@ public class Race
         }
         
         return odds;
+    }
+
+    /// <summary>
+    /// Create and add RaceOdds entities for all 6 selections based on calculated odds
+    /// </summary>
+    public void CreateRaceOdds()
+    {
+        var calculatedOdds = CalculateOddsFromSequence();
+        
+        foreach (var (selection, odds) in calculatedOdds)
+        {
+            var raceOdds = new RaceOdds(
+                id: 0,
+                raceId: Id,
+                selection: selection,
+                odds: odds
+            );
+            
+            RaceOdds.Add(raceOdds);
+        }
     }
     
     /// <summary>

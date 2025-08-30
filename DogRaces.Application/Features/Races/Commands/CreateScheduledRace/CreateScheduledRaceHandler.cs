@@ -44,6 +44,7 @@ public class CreateScheduledRaceHandler : IRequestHandler<CreateScheduledRaceCom
             raceDurationInSeconds: durationInSeconds
         );
         
+        race.CreateRaceOdds();
         _context.Races.Add(race);
         await _context.SaveChangesAsync(cancellationToken);
         

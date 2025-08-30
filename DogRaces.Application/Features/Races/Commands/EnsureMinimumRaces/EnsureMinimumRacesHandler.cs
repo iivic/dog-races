@@ -71,10 +71,12 @@ public class EnsureMinimumRacesHandler : IRequestHandler<EnsureMinimumRacesComma
             startTime: nextStartTime,
             raceDurationInSeconds: durationInSeconds
             );
+            
+            race.CreateRaceOdds();
             races.Add(race);
             nextStartTime = race.EndTime.AddSeconds(intervalSeconds);
         }
-
+    
         return races;
     }
 }

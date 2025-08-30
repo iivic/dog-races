@@ -13,11 +13,11 @@ public class DogRacesContextFactory : IDesignTimeDbContextFactory<DogRacesContex
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.Migrations.json")
+            .AddJsonFile("appsettings.Development.json")
             .Build();
 
         var connectionString = configuration.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found in appsettings.Migrations.json");
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found in appsettings.Development.json");
 
         var optionsBuilder = new DbContextOptionsBuilder<DogRacesContext>();
         optionsBuilder.UseNpgsql(connectionString);

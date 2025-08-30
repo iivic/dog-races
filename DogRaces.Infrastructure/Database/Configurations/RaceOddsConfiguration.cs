@@ -11,7 +11,7 @@ public class RaceOddsConfiguration : IEntityTypeConfiguration<RaceOdds>
 {
     public void Configure(EntityTypeBuilder<RaceOdds> builder)
     {
-        builder.ToTable("RaceOdds");
+        builder.ToTable("race_odds");
 
         builder.HasKey(ro => ro.Id);
         builder.Property(ro => ro.Id)

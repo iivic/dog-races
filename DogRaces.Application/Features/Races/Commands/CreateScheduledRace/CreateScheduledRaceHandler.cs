@@ -1,5 +1,6 @@
 using DogRaces.Application.Data;
 using DogRaces.Domain.Entities;
+using DogRaces.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,13 +18,13 @@ public class CreateScheduledRaceHandler : IRequestHandler<CreateScheduledRaceCom
     public async Task<CreateScheduledRaceResponse> Handle(CreateScheduledRaceCommand request, CancellationToken cancellationToken)
     {
         // Use hardcoded values for now - can be made configurable later if needed
-        var intervalSeconds = 5;  // 30 seconds between race end and next start
+        var intervalSeconds = 5;  // 5 seconds between race end and next start
         var durationInSeconds = 10;   // 10 second race duration
         
         // Find the latest scheduled race to determine next start time
         var latestRace = await _context.Races
-            .Where(r => r.IsActive)
-            .OrderByDescending(r => r.StartTime)
+            .Where(r => r.Status == RaceStatus.Scheduled)
+            .OrderByDescending(r => r.EndTime)
             .FirstOrDefaultAsync(cancellationToken);
         
         // Calculate start time: either now interval, or latest race + interval

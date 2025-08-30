@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DogRaces.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DogRaces.Infrastructure.Migrations
 {
     [DbContext(typeof(DogRacesContext))]
-    partial class DogRacesContextModelSnapshot : ModelSnapshot
+    [Migration("20250830221552_UpdateTableNamesToSnakeCase")]
+    partial class UpdateTableNamesToSnakeCase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

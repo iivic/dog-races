@@ -1,18 +1,19 @@
+@baseUrl = http://localhost:5095
 
 ### Get Wallet Status
-GET http://localhost:5095/api/wallet/status
+GET {{baseUrl}}/api/wallet/status
 Accept: application/json
 
 ###
 
 ### Get Transaction History
-GET http://localhost:5095/api/wallet/transactions
+GET {{baseUrl}}/api/wallet/transactions
 Accept: application/json
 
 ###
 
 ### Reset Wallet (Default $100)
-POST http://localhost:5095/api/wallet/reset
+POST {{baseUrl}}/api/wallet/reset
 Content-Type: application/json
 
 {
@@ -22,7 +23,7 @@ Content-Type: application/json
 ###
 
 ### Reset Wallet (Custom Amount)
-POST http://localhost:5095/api/wallet/reset
+POST {{baseUrl}}/api/wallet/reset
 Content-Type: application/json
 
 {
@@ -32,7 +33,7 @@ Content-Type: application/json
 ###
 
 ### Test Reserve Funds ($50)
-POST http://localhost:5095/api/wallet/test-reserve
+POST {{baseUrl}}/api/wallet/test-reserve
 Content-Type: application/json
 
 {
@@ -42,7 +43,7 @@ Content-Type: application/json
 ###
 
 ### Test Reserve Funds ($25)
-POST http://localhost:5095/api/wallet/test-reserve
+POST {{baseUrl}}/api/wallet/test-reserve
 Content-Type: application/json
 
 {
@@ -52,7 +53,7 @@ Content-Type: application/json
 ###
 
 ### Test Release Funds (Replace with actual TicketId from reserve response)
-POST http://localhost:5095/api/wallet/test-release
+POST {{baseUrl}}/api/wallet/test-release
 Content-Type: application/json
 
 {
@@ -64,12 +65,12 @@ Content-Type: application/json
 
 ### Full Test Sequence
 # 1. Get initial status
-GET http://localhost:5095/api/wallet/status
+GET {{baseUrl}}/api/wallet/status
 
 ###
 
 # 2. Reset wallet to $200
-POST http://localhost:5095/api/wallet/reset
+POST {{baseUrl}}/api/wallet/reset
 Content-Type: application/json
 
 {
@@ -89,11 +90,11 @@ Content-Type: application/json
 ###
 
 # 4. Check status after reserve
-GET http://localhost:5095/api/wallet/status
+GET {{baseUrl}}/api/wallet/status
 
 ###
 
 # 5. Check transaction history
-GET http://localhost:5095/api/wallet/transactions
+GET {{baseUrl}}/api/wallet/transactions
 
 ###

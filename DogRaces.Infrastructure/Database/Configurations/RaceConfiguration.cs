@@ -11,7 +11,7 @@ public class RaceConfiguration : IEntityTypeConfiguration<Race>
 {
     public void Configure(EntityTypeBuilder<Race> builder)
     {
-        builder.ToTable("Races");
+        builder.ToTable("races");
 
         builder.HasKey(r => r.Id);
         builder.Property(r => r.Id)
@@ -31,6 +31,13 @@ public class RaceConfiguration : IEntityTypeConfiguration<Race>
             .HasConversion(
                 v => v != null ? string.Join(",", v) : null,
                 v => !string.IsNullOrEmpty(v) ? v.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray() : null
+            )
+            .Metadata.SetValueComparer(
+                new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<int[]>(
+                    (c1, c2) => (c1 == null && c2 == null) || (c1 != null && c2 != null && c1.SequenceEqual(c2)),
+                    c => c == null ? 0 : c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => c == null ? Array.Empty<int>() : c.ToArray()
+                )
             );
 
         builder.Property(r => r.CreatedAt)

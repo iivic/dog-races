@@ -11,7 +11,7 @@ public class BetConfiguration : IEntityTypeConfiguration<Bet>
 {
     public void Configure(EntityTypeBuilder<Bet> builder)
     {
-        builder.ToTable("Bets");
+        builder.ToTable("bets");
 
         builder.HasKey(b => b.Id);
         builder.Property(b => b.Id)

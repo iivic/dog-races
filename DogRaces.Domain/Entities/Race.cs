@@ -1,6 +1,5 @@
 using DogRaces.Domain.Enums;
 using DogRaces.Domain.Services;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DogRaces.Domain.Entities;
 
@@ -169,6 +168,15 @@ public class Race
             
         Status = RaceStatus.Finished;
         ResultPublishedAt = DateTimeOffset.UtcNow;
+        ProcessBetsResult();
+    }
+
+    private void ProcessBetsResult()
+    {
+        foreach (var bet in Bets)
+        {
+            bet.ProcessResult(Result!);
+        }
     }
 
     private void SetResult(int[] result)

@@ -24,6 +24,8 @@ app.UseHttpsRedirection();
 
 // Map feature endpoints
 app.MapWalletEndpoints();
+app.MapRaceEndpoints();
+app.MapConfigurationEndpoints();
 
 app.Run();
 

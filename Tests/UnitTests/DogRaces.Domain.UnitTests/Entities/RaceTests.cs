@@ -6,71 +6,105 @@ namespace DogRaces.Domain.UnitTests.Entities;
 public class RaceTests
 {
     [Fact]
-    public void Constructor_WithValidParameters_ShouldCreateRace()
+    public void Race_WhenCreated_ShouldHaveCorrectProperties()
     {
         // Arrange
-        var id = 1L;
         var startTime = DateTimeOffset.UtcNow.AddMinutes(30);
         var durationInSeconds = 120;
 
         // Act
-        var race = new Race(id, startTime, durationInSeconds);
+        var race = new Race(1L, startTime, durationInSeconds);
 
         // Assert
-        Assert.Equal(id, race.Id);
+        Assert.Equal(1L, race.Id);
         Assert.Equal(startTime, race.StartTime);
         Assert.Equal(startTime.AddSeconds(durationInSeconds), race.EndTime);
         Assert.True(race.IsActive);
-        Assert.Null(race.Result);
-        Assert.True(race.CreatedAt <= DateTimeOffset.UtcNow);
+        Assert.NotNull(race.RaceName);
+        Assert.NotEmpty(race.RaceName);
+        Assert.Equal(100, race.RandomNumbers.Count);
+        Assert.All(race.RandomNumbers, n => Assert.InRange(n, 1, 6));
+    }
+
+    [Fact]
+    public void Race_WhenCreated_ShouldHaveValidDuration()
+    {
+        // Arrange
+        var startTime = DateTimeOffset.UtcNow.AddMinutes(30);
+        var duration = 90;
+
+        // Act
+        var race = new Race(1L, startTime, duration);
+
+        // Assert
+        Assert.Equal(duration, (race.EndTime - race.StartTime).TotalSeconds);
     }
 
     [Theory]
-    [InlineData(1)]
-    [InlineData(30)]
-    [InlineData(120)]
-    public void Constructor_WithValidDuration_ShouldCreateRace(int validDuration)
+    [InlineData(-1)]
+    [InlineData(0)]
+    public void Race_WithInvalidDuration_ShouldThrow(int invalidDuration)
     {
         // Arrange
         var startTime = DateTimeOffset.UtcNow.AddMinutes(30);
 
-        // Act
-        var race = new Race(1L, startTime, validDuration);
-
-        // Assert
-        Assert.Equal(startTime.AddSeconds(validDuration), race.EndTime);
-        Assert.True(race.IsActive);
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => new Race(1L, startTime, invalidDuration));
     }
 
     [Fact]
-    public void CloseRaceForBetting_WhenActive_ShouldCloseRace()
+    public void CloseBetting_WhenActive_ShouldCloseRaceAndGenerateResult()
     {
         // Arrange
         var race = new Race(1L, DateTimeOffset.UtcNow.AddMinutes(30), 120);
-        var raceResult = new[] { 1, 2, 3 };
 
         // Act
-        race.CloseRaceForBetting(raceResult);
+        race.CloseBetting();
 
         // Assert
         Assert.False(race.IsActive);
-        Assert.Equal(raceResult, race.Result);
+        Assert.NotNull(race.Result);
+        Assert.Equal(3, race.Result.Length);
+        Assert.All(race.Result, n => Assert.InRange(n, 1, 6));
     }
 
     [Fact]
-    public void CloseRaceForBetting_WhenAlreadyClosed_ShouldUpdateResult()
+    public void CloseBetting_WhenAlreadyClosed_ShouldThrowException()
     {
         // Arrange
         var race = new Race(1L, DateTimeOffset.UtcNow.AddMinutes(30), 120);
-        race.CloseRaceForBetting(new[] { 1, 2, 3 }); // Already closed
-        
-        var newResult = new[] { 3, 2, 1 };
+        race.CloseBetting(); // First close
+
+        // Act & Assert
+        Assert.Throws<InvalidOperationException>(() => race.CloseBetting());
+    }
+
+    [Fact]
+    public void GenerateResults_ShouldProduceRandomResults()
+    {
+        // Arrange
+        var race = new Race(1L, DateTimeOffset.UtcNow.AddMinutes(30), 120);
 
         // Act
-        race.CloseRaceForBetting(newResult);
+        race.GenerateResults();
 
-        // Assert - The race allows updating the result
-        Assert.Equal(newResult, race.Result);
-        Assert.False(race.IsActive);
+        // Assert
+        Assert.NotNull(race.Result);
+        Assert.Equal(3, race.Result.Length);
+        Assert.All(race.Result, n => Assert.InRange(n, 1, 6));
+    }
+
+    [Fact]
+    public void CalculateOddsFromSequence_ShouldReturnValidOdds()
+    {
+        // Arrange
+        var race = new Race(1L, DateTimeOffset.UtcNow.AddMinutes(30), 120);
+
+        // Act
+        var odds = race.CalculateOddsFromSequence();
+
+        // Assert
+        Assert.Equal(6, odds.Count); // Should have odds for dogs 1-6
+        Assert.All(odds.Values, odd => Assert.InRange(odd, 1.10m, 80.0m)); // Within reasonable range for random sequences
     }
 }

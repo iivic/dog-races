@@ -12,6 +12,7 @@ public interface IDogRacesContext
     DbSet<RaceOdds> RaceOdds { get; }
     DbSet<Ticket> Tickets { get; }
     DbSet<Bet> Bets { get; }
+    DbSet<GlobalConfiguration> GlobalConfigurations { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

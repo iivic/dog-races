@@ -17,6 +17,7 @@ public class DogRacesContext : DbContext, IDogRacesContext
     public DbSet<RaceOdds> RaceOdds => Set<RaceOdds>();
     public DbSet<Ticket> Tickets => Set<Ticket>();
     public DbSet<Bet> Bets => Set<Bet>();
+    public DbSet<GlobalConfiguration> GlobalConfigurations => Set<GlobalConfiguration>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,5 +28,6 @@ public class DogRacesContext : DbContext, IDogRacesContext
         modelBuilder.ApplyConfiguration(new RaceOddsConfiguration());
         modelBuilder.ApplyConfiguration(new TicketConfiguration());
         modelBuilder.ApplyConfiguration(new BetConfiguration());
+        modelBuilder.ApplyConfiguration(new GlobalConfigurationConfiguration());
     }
 }

@@ -1,0 +1,13 @@
+@baseUrl = http://localhost:5095
+
+### Get Active Races
+GET {{baseUrl}}/api/races/active
+Accept: application/json
+
+###
+
+### Get Active Race Count  
+GET {{baseUrl}}/api/races/count
+Accept: application/json
+
+###

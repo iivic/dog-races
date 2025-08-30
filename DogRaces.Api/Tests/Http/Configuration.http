@@ -1,0 +1,7 @@
+@baseUrl = http://localhost:5095
+
+### Get System Configuration
+GET {{baseUrl}}/api/configuration
+Accept: application/json
+
+###

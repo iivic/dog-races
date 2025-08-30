@@ -1,0 +1,99 @@
+
+### Get Wallet Status
+GET http://localhost:5095/api/wallet/status
+Accept: application/json
+
+###
+
+### Get Transaction History
+GET http://localhost:5095/api/wallet/transactions
+Accept: application/json
+
+###
+
+### Reset Wallet (Default $100)
+POST http://localhost:5095/api/wallet/reset
+Content-Type: application/json
+
+{
+  "startingBalance": null
+}
+
+###
+
+### Reset Wallet (Custom Amount)
+POST http://localhost:5095/api/wallet/reset
+Content-Type: application/json
+
+{
+  "startingBalance": 250.00
+}
+
+###
+
+### Test Reserve Funds ($50)
+POST http://localhost:5095/api/wallet/test-reserve
+Content-Type: application/json
+
+{
+  "amount": 50.00
+}
+
+###
+
+### Test Reserve Funds ($25)
+POST http://localhost:5095/api/wallet/test-reserve
+Content-Type: application/json
+
+{
+  "amount": 25.00
+}
+
+###
+
+### Test Release Funds (Replace with actual TicketId from reserve response)
+POST http://localhost:5095/api/wallet/test-release
+Content-Type: application/json
+
+{
+  "amount": 25.00,
+  "ticketId": "00000000-0000-0000-0000-000000000000"
+}
+
+###
+
+### Full Test Sequence
+# 1. Get initial status
+GET http://localhost:5095/api/wallet/status
+
+###
+
+# 2. Reset wallet to $200
+POST http://localhost:5095/api/wallet/reset
+Content-Type: application/json
+
+{
+  "startingBalance": 200.00
+}
+
+###
+
+# 3. Reserve $75
+POST http://localhost:5095/api/wallet/test-reserve
+Content-Type: application/json
+
+{
+  "amount": 75.00
+}
+
+###
+
+# 4. Check status after reserve
+GET http://localhost:5095/api/wallet/status
+
+###
+
+# 5. Check transaction history
+GET http://localhost:5095/api/wallet/transactions
+
+###

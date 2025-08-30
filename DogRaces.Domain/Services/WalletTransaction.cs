@@ -15,7 +15,7 @@ public class WalletTransaction
         Amount = amount;
         BalanceAfter = balanceAfter;
         ReservedAfter = reservedAfter;
-        Description = description ?? string.Empty;
+        Description = description;
         CreatedAt = DateTimeOffset.UtcNow;
     }
 
@@ -51,6 +51,6 @@ public class WalletTransaction
 
     public override string ToString()
     {
-        return $"{CreatedAt:HH:mm:ss} | {Type} | {Amount:C} | {Description} | Balance: {BalanceAfter:C} | Reserved: {ReservedAfter:C}";
+        return $"{CreatedAt:HH:mm:ss} | {Type} | {Amount} | {Description} | Balance: {BalanceAfter} | Reserved: {ReservedAfter}";
     }
 }

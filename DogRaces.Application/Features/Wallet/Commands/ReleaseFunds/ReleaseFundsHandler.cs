@@ -17,7 +17,7 @@ public class ReleaseFundsHandler : IRequestHandler<ReleaseFundsCommand, ReleaseF
         _walletService.ReleaseForTicket(request.Amount, request.TicketId);
         
         var response = new ReleaseFundsResponse(
-            $"Released {request.Amount:C} for ticket {request.TicketId}",
+            $"Released {request.Amount} for ticket {request.TicketId}",
             _walletService.GetWalletStatus()
         );
 

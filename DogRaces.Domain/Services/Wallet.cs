@@ -77,7 +77,7 @@ public class Wallet
         ReservedAmount += amount;
         
         LogTransaction(WalletTransactionType.Reserve, amount, 
-            $"Reserved funds for ticket {ticketId.ToString()[..8]}...", ticketId);
+            $"Reserved funds for ticket {ticketId.ToString()}...", ticketId);
         
         return true;
     }
@@ -127,7 +127,7 @@ public class Wallet
     /// </summary>
     public string GetStatus()
     {
-        return $"Balance: {Balance:C}, Reserved: {ReservedAmount:C}, Total: {TotalFunds:C}";
+        return $"Balance: {Balance}, Reserved: {ReservedAmount}, Total: {TotalFunds}";
     }
 
     /// <summary>

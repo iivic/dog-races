@@ -1,0 +1,30 @@
+@baseUrl = http://localhost:5095
+
+### 1. Check initial wallet balance
+GET {{baseUrl}}/api/wallet/balance
+
+### 2. Check active races
+GET {{baseUrl}}/api/races/active
+
+### 3. Place a bet on the first available race odds
+POST {{baseUrl}}/api/tickets/place-bet
+Content-Type: application/json
+
+{
+  "totalStake": 10.0,
+  "bets": [
+    {
+      "raceOddsId": 1
+    }
+  ]
+}
+
+### 4. Check wallet balance after bet (should be reduced)
+GET {{baseUrl}}/api/wallet/balance
+
+### 5. Wait for races to finish and tickets to be processed by background service
+### Then check wallet balance again (should show payout if bet won)
+GET {{baseUrl}}/api/wallet/balance
+
+### 6. Check configuration
+GET {{baseUrl}}/api/configuration

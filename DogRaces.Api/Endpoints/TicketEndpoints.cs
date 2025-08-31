@@ -27,9 +27,9 @@ public static class TicketEndpoints
     /// <summary>
     /// Place a betting ticket
     /// </summary>
-    private static async Task<IResult> PlaceBet(PlaceBetCommand request, IMediator mediator)
+    private static async Task<IResult> PlaceBet(PlaceBetCommand request, ISender sender)
     {
-        var response = await mediator.Send(request);
+        var response = await sender.Send(request);
         
         if (response.Success)
         {

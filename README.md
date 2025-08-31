@@ -79,6 +79,14 @@ The solution follows a **Layered arhitecture** approach with **Domain-Driven Des
 - **Result Determination**: Automatic race finishing and result calculation
 - **Payout Processing**: Automatic winnings distribution
 
+### 🛡️ Security & Error Handling
+
+- **Global Exception Middleware**: Catches all unhandled exceptions
+- **Structured Error Responses**: Consistent JSON error format
+- **Environment-Aware**: Detailed errors in development, safe messages in production
+- **Request Tracing**: Unique trace IDs for error tracking
+- **Comprehensive Logging**: All exceptions logged with context
+
 ## 🚀 Getting Started
 
 ### Prerequisites

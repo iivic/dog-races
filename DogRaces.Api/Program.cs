@@ -1,4 +1,5 @@
 using DogRaces.Api.Endpoints;
+using DogRaces.Api.Middleware;
 using DogRaces.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,8 @@ builder.Services.AddInfrastructure(builder.Configuration);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseGlobalExceptionHandling();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

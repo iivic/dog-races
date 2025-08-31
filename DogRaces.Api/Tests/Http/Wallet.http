@@ -1,7 +1,7 @@
 @baseUrl = http://localhost:5095
 
 ### Get Wallet Status
-GET {{baseUrl}}/api/wallet/status
+GET {{baseUrl}}/api/wallet/balance
 Accept: application/json
 
 ###
@@ -33,7 +33,7 @@ Content-Type: application/json
 ###
 
 ### Test Reserve Funds ($50)
-POST {{baseUrl}}/api/wallet/test-reserve
+POST {{baseUrl}}/api/wallet/reserve
 Content-Type: application/json
 
 {
@@ -43,7 +43,7 @@ Content-Type: application/json
 ###
 
 ### Test Reserve Funds ($25)
-POST {{baseUrl}}/api/wallet/test-reserve
+POST {{baseUrl}}/api/wallet/reserve
 Content-Type: application/json
 
 {
@@ -53,7 +53,7 @@ Content-Type: application/json
 ###
 
 ### Test Release Funds (Replace with actual TicketId from reserve response)
-POST {{baseUrl}}/api/wallet/test-release
+POST {{baseUrl}}/api/wallet/release
 Content-Type: application/json
 
 {
@@ -65,7 +65,7 @@ Content-Type: application/json
 
 ### Full Test Sequence
 # 1. Get initial status
-GET {{baseUrl}}/api/wallet/status
+GET {{baseUrl}}/api/wallet/balance
 
 ###
 
@@ -80,7 +80,7 @@ Content-Type: application/json
 ###
 
 # 3. Reserve $75
-POST http://localhost:5095/api/wallet/test-reserve
+POST {{baseUrl}}/api/wallet/reserve
 Content-Type: application/json
 
 {
@@ -90,7 +90,7 @@ Content-Type: application/json
 ###
 
 # 4. Check status after reserve
-GET {{baseUrl}}/api/wallet/status
+GET {{baseUrl}}/api/wallet/balance
 
 ###
 

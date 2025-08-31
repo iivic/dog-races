@@ -17,6 +17,13 @@ public record ActiveRaceDto(
     DateTimeOffset EndTime,
     bool HasStarted,
     bool HasEnded,
-    Dictionary<int, decimal> Odds,
+    List<RaceOddsDto> RaceOdds,
     int[]? Result
+);
+
+public record RaceOddsDto(
+    long Id,
+    int Selection,
+    decimal Odds,
+    string BetType
 );

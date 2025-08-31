@@ -5,6 +5,7 @@
 ### 1. Reset wallet to $100
 POST {{baseUrl}}/api/wallet/reset
 Content-Type: application/json
+
 {
   "startingBalance": 100.00
 }
@@ -21,6 +22,7 @@ GET {{baseUrl}}/api/tickets
 ### 5. Place $10 bet
 POST {{baseUrl}}/api/tickets/place-bet
 Content-Type: application/json
+
 {
   "totalStake": 10.0,
   "bets": [
@@ -39,6 +41,7 @@ GET {{baseUrl}}/api/tickets
 ### 8. Place another bet ($15)
 POST {{baseUrl}}/api/tickets/place-bet
 Content-Type: application/json
+
 {
   "totalStake": 15.0,
   "bets": [
@@ -63,6 +66,7 @@ GET {{baseUrl}}/api/tickets?status=Success
 ### 13. Try insufficient balance bet (should fail)
 POST {{baseUrl}}/api/tickets/place-bet
 Content-Type: application/json
+
 {
   "totalStake": 200.0,
   "bets": [

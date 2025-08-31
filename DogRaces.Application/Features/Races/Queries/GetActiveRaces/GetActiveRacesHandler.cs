@@ -16,6 +16,7 @@ public class GetActiveRacesHandler : IRequestHandler<GetActiveRacesQuery, GetAct
     public async Task<GetActiveRacesResponse> Handle(GetActiveRacesQuery request, CancellationToken cancellationToken)
     {
         var races = await _context.Races
+            .Include(r => r.RaceOdds)
             .Where(r => r.IsActive)
             .OrderBy(r => r.StartTime)
             .ToListAsync(cancellationToken);
@@ -28,7 +29,12 @@ public class GetActiveRacesHandler : IRequestHandler<GetActiveRacesQuery, GetAct
             race.EndTime,
             race.HasStarted,
             race.HasEnded,
-            race.CalculateOddsFromSequence(),
+            race.RaceOdds.Select(ro => new RaceOddsDto(
+                ro.Id,
+                ro.Selection,
+                ro.Odds,
+                ro.BetType.ToString()
+            )).OrderBy(ro => ro.BetType).ThenBy(ro => ro.Selection).ToList(),
             race.Result
         )).ToList();
 

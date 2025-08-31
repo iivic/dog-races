@@ -58,7 +58,7 @@ public class RacesApiTests : IClassFixture<IntegrationTestWebAppFactory>
     }
 
     [Fact]
-    public async Task GetActiveRaces_ShouldIncludeOddsForEachRace()
+    public async Task GetActiveRaces_ShouldIncludeRaceOddsForEachRace()
     {
         // Arrange
         using var scope = _factory.Services.CreateScope();
@@ -74,9 +74,29 @@ public class RacesApiTests : IClassFixture<IntegrationTestWebAppFactory>
 
         foreach (var race in response.Races)
         {
-            Assert.NotNull(race.Odds);
-            Assert.Equal(6, race.Odds.Count); // Should have odds for all 6 dogs
-            Assert.All(race.Odds.Values, odds => Assert.True(odds > 1.0m)); // All odds should be > 1.0
+            Assert.NotNull(race.RaceOdds);
+            Assert.NotEmpty(race.RaceOdds);
+            
+            // Should have odds for all combinations (6 selections × 3 bet types = 18 total)
+            Assert.Equal(18, race.RaceOdds.Count);
+            
+            // Verify each race odds has required properties
+            Assert.All(race.RaceOdds, raceOdds =>
+            {
+                Assert.True(raceOdds.Id > 0); // Should have valid ID
+                Assert.InRange(raceOdds.Selection, 1, 6); // Selection should be 1-6
+                Assert.True(raceOdds.Odds > 1.0m); // All odds should be > 1.0
+                Assert.Contains(raceOdds.BetType, new[] { "Winner", "Top2", "Top3" }); // Valid bet types
+            });
+            
+            // Verify we have all selections for each bet type
+            var winnerOdds = race.RaceOdds.Where(ro => ro.BetType == "Winner").ToList();
+            var top2Odds = race.RaceOdds.Where(ro => ro.BetType == "Top2").ToList();
+            var top3Odds = race.RaceOdds.Where(ro => ro.BetType == "Top3").ToList();
+            
+            Assert.Equal(6, winnerOdds.Count); // 6 selections for Winner bets
+            Assert.Equal(6, top2Odds.Count);   // 6 selections for Top2 bets  
+            Assert.Equal(6, top3Odds.Count);   // 6 selections for Top3 bets
         }
     }
 

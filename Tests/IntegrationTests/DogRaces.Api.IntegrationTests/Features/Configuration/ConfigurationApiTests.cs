@@ -1,7 +1,7 @@
-using System.Net;
-using System.Net.Http.Json;
 using DogRaces.Api.IntegrationTests.Infrastructure;
 using DogRaces.Application.Features.Configuration.Queries.GetGlobalConfiguration;
+using System.Net;
+using System.Net.Http.Json;
 using Xunit;
 
 namespace DogRaces.Api.IntegrationTests.Features.Configuration;

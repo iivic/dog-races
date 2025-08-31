@@ -37,7 +37,7 @@ public class BetTests
     public void Constructor_WithInvalidSelection_ShouldThrowException(int invalidSelection)
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => 
+        Assert.Throws<ArgumentException>(() =>
             new Bet(1L, 1L, Guid.NewGuid(), invalidSelection, BetType.Winner, 2.0m));
     }
 
@@ -48,7 +48,7 @@ public class BetTests
     public void Constructor_WithInvalidOdds_ShouldThrowException(decimal invalidOdds)
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => 
+        Assert.Throws<ArgumentException>(() =>
             new Bet(1L, 1L, Guid.NewGuid(), 1, BetType.Winner, invalidOdds));
     }
 

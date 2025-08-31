@@ -1,7 +1,7 @@
 using DogRaces.Application.Features.Races.Commands.EnsureMinimumRaces;
 using DogRaces.Application.Features.Races.Commands.ProcessBettingClosures;
-using DogRaces.Application.Features.Races.Commands.ProcessRaceStarts;
 using DogRaces.Application.Features.Races.Commands.ProcessRaceFinishes;
+using DogRaces.Application.Features.Races.Commands.ProcessRaceStarts;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,10 +18,10 @@ namespace DogRaces.BackgroundServices.Workers;
 public class RaceSchedulingWorker : BaseWorker
 {
     private const int CheckIntervalSeconds = 2; // Check every 2 seconds for responsive timing
-    
+
     public RaceSchedulingWorker(
         ILogger<BaseWorker> logger,
-        IServiceProvider serviceProvider) 
+        IServiceProvider serviceProvider)
         : base(logger, serviceProvider, CheckIntervalSeconds)
     {
     }
@@ -41,16 +41,16 @@ public class RaceSchedulingWorker : BaseWorker
 
     private void LogTransitionResults(
         ProcessBettingClosuresResponse bettingResult,
-        ProcessRaceStartsResponse startsResult, 
+        ProcessRaceStartsResponse startsResult,
         ProcessRaceFinishesResponse finishesResult)
     {
         var anyChanges = bettingResult.BettingClosed > 0 || startsResult.RacesStarted > 0 || finishesResult.RacesFinished > 0;
-        
+
         if (anyChanges)
         {
             var totalProcessed = bettingResult.RacesProcessed + startsResult.RacesProcessed + finishesResult.RacesProcessed;
             Logger.LogInformation(
-                "🔄 Processed {Total} races: {Closed} betting closed, {Started} started, {Finished} finished", 
+                "🔄 Processed {Total} races: {Closed} betting closed, {Started} started, {Finished} finished",
                 totalProcessed,
                 bettingResult.BettingClosed,
                 startsResult.RacesStarted,
@@ -65,7 +65,7 @@ public class RaceSchedulingWorker : BaseWorker
         if (anyChanges)
         {
             Logger.LogInformation(
-                "➕ Created {Count} new races. Active races: {Before} → {After}", 
+                "➕ Created {Count} new races. Active races: {Before} → {After}",
                 result.RacesCreated,
                 result.ActiveRacesBefore,
                 result.ActiveRacesAfter);

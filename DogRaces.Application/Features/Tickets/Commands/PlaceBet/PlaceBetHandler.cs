@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using DogRaces.Application.Data;
 using DogRaces.Application.Interfaces;
 using DogRaces.Domain.Entities;
@@ -6,6 +5,7 @@ using DogRaces.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Runtime.CompilerServices;
 
 namespace DogRaces.Application.Features.Tickets.Commands.PlaceBet;
 
@@ -27,7 +27,7 @@ public class PlaceBetHandler : IRequestHandler<PlaceBetCommand, PlaceBetResponse
 
     public async Task<PlaceBetResponse> Handle(PlaceBetCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Processing bet placement for stake {Stake} with {BetCount} bets", 
+        _logger.LogInformation("Processing bet placement for stake {Stake} with {BetCount} bets",
             request.TotalStake, request.Bets.Count);
 
         try
@@ -41,14 +41,14 @@ public class PlaceBetHandler : IRequestHandler<PlaceBetCommand, PlaceBetResponse
 
             var ticketId = Guid.NewGuid();
             var fundsReserved = _walletService.TryReserveForTicket(request.TotalStake, ticketId);
-            
+
             if (!fundsReserved)
             {
                 _logger.LogWarning("Insufficient funds for ticket {TicketId}, stake: {Stake}", ticketId, request.TotalStake);
                 return new PlaceBetResponse(
-                    false, 
-                    null, 
-                    "Insufficient funds", 
+                    false,
+                    null,
+                    "Insufficient funds",
                     [$"Unable to reserve {request.TotalStake} from wallet"]);
             }
 
@@ -57,17 +57,17 @@ public class PlaceBetHandler : IRequestHandler<PlaceBetCommand, PlaceBetResponse
                 // Step 3: Revalidacija tiketa (2.3) - Check if races haven't started yet
                 var raceIds = validationResult.ValidatedBets.Select(vb => vb.RaceOdds.RaceId).Distinct().ToList();
                 var isStillValid = await RevalidateTicketTimingAsync(raceIds, cancellationToken);
-                
+
                 if (!isStillValid)
                 {
                     // Release reserved funds if revalidation fails
                     _walletService.ReleaseForTicket(request.TotalStake, ticketId);
                     _logger.LogWarning("Ticket revalidation failed for ticket {TicketId} - races have started", ticketId);
-                    
+
                     return new PlaceBetResponse(
-                        false, 
-                        null, 
-                        "Betting closed", 
+                        false,
+                        null,
+                        "Betting closed",
                         ["One or more races have started or closed for betting"]);
                 }
 
@@ -83,21 +83,21 @@ public class PlaceBetHandler : IRequestHandler<PlaceBetCommand, PlaceBetResponse
 
                 var ticket = Ticket.Create(request.TotalStake, bets);
                 ticket.Approve();
-                
+
                 _walletService.TryCommitForTicket(request.TotalStake, ticketId);
 
                 _context.Tickets.Add(ticket);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 _logger.LogInformation(
-                    "Successfully placed bet for ticket {TicketId} with potential win {PotentialWin}", 
+                    "Successfully placed bet for ticket {TicketId} with potential win {PotentialWin}",
                     ticketId,
                     validationResult.PotentialWin);
-                
+
                 return new PlaceBetResponse(
-                    true, 
-                    ticketId, 
-                    $"Bet placed successfully. Potential win: {validationResult.PotentialWin:F2}", 
+                    true,
+                    ticketId,
+                    $"Bet placed successfully. Potential win: {validationResult.PotentialWin:F2}",
                     new List<string>());
             }
             catch (Exception ex)
@@ -112,9 +112,9 @@ public class PlaceBetHandler : IRequestHandler<PlaceBetCommand, PlaceBetResponse
         {
             _logger.LogError(ex, "Error processing bet placement");
             return new PlaceBetResponse(
-                false, 
-                null, 
-                "Internal error occurred", 
+                false,
+                null,
+                "Internal error occurred",
                 new List<string> { "Please try again later" });
         }
     }

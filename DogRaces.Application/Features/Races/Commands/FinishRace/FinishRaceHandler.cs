@@ -32,12 +32,12 @@ internal sealed class FinishRaceHandler : IRequestHandler<FinishRaceCommand, Fin
         race.FinishRace();
         await _context.SaveChangesAsync(cancellationToken);
 
-            return new FinishRaceResponse(
-            race.Id,
-            race.RaceName,
-            race.Status.ToString(),
-            race.Result!,
-            true
-        );
+        return new FinishRaceResponse(
+        race.Id,
+        race.RaceName,
+        race.Status.ToString(),
+        race.Result!,
+        true
+    );
     }
 }

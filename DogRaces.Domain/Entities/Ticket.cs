@@ -15,27 +15,27 @@ public class Ticket
         var ticket = new Ticket();
         ticket.Id = Guid.NewGuid();
         ticket.Status = TicketStatus.Pending;
-        
+
         ticket.SetStake(totalStake);
         ticket.SetBets(bets);
-    
+
         ticket.CreatedAt = DateTimeOffset.UtcNow;
         return ticket;
     }
 
     public Guid Id { get; private set; }
     public TicketStatus Status { get; private set; }
-    
+
     /// <summary>
     /// Total stake amount (sum of all bet stakes)
     /// </summary>
     public decimal TotalStake { get; private set; }
-    
+
     /// <summary>
     /// Total payout amount (sum of all winning bet payouts)
     /// </summary>
     public decimal? TotalPayout { get; private set; }
-    
+
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? ProcessedAt { get; private set; }
 

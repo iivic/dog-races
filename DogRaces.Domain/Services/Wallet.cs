@@ -14,7 +14,7 @@ public class Wallet
     {
         SetBalance(startingBalance);
         ReservedAmount = 0m;
-        
+
         // Log initial balance
         LogTransaction(WalletTransactionType.Payout, startingBalance, "Initial balance", Guid.Empty);
     }
@@ -28,22 +28,22 @@ public class Wallet
     }
 
     private readonly List<WalletTransaction> _transactions = new();
-    
+
     /// <summary>
     /// Current available balance
     /// </summary>
     public decimal Balance { get; private set; }
-    
+
     /// <summary>
     /// Currently reserved funds for pending bets
     /// </summary>
     public decimal ReservedAmount { get; private set; }
-    
+
     /// <summary>
     /// Total funds (available + reserved)
     /// </summary>
     public decimal TotalFunds => Balance + ReservedAmount;
-    
+
     /// <summary>
     /// Transaction history (read-only)
     /// </summary>
@@ -72,16 +72,16 @@ public class Wallet
     {
         if (amount <= 0)
             return false;
-            
+
         if (!HasSufficientBalance(amount))
             return false;
 
         Balance -= amount;
         ReservedAmount += amount;
-        
-        LogTransaction(WalletTransactionType.Reserve, amount, 
+
+        LogTransaction(WalletTransactionType.Reserve, amount,
             $"Reserved funds for ticket {ticketId.ToString()}...", ticketId);
-        
+
         return true;
     }
 
@@ -92,15 +92,15 @@ public class Wallet
     {
         if (amount <= 0)
             return false;
-            
+
         if (ReservedAmount < amount)
             return false;
 
         ReservedAmount -= amount;
-        
-        LogTransaction(WalletTransactionType.Commit, amount, 
+
+        LogTransaction(WalletTransactionType.Commit, amount,
             $"Committed funds for ticket {ticketId.ToString()[..8]}...", ticketId);
-        
+
         return true;
     }
 
@@ -111,12 +111,12 @@ public class Wallet
     {
         if (amount <= 0)
             return;
-            
+
         var releaseAmount = Math.Min(amount, ReservedAmount);
         ReservedAmount -= releaseAmount;
         Balance += releaseAmount;
-        
-        LogTransaction(WalletTransactionType.Release, releaseAmount, 
+
+        LogTransaction(WalletTransactionType.Release, releaseAmount,
             $"Released funds for ticket {ticketId.ToString()}...", ticketId);
     }
 
@@ -127,10 +127,10 @@ public class Wallet
     {
         if (amount <= 0)
             return;
-            
+
         Balance += amount;
-        
-        LogTransaction(WalletTransactionType.Payout, amount, 
+
+        LogTransaction(WalletTransactionType.Payout, amount,
             $"Payout for ticket {ticketId.ToString()}...", ticketId);
     }
 

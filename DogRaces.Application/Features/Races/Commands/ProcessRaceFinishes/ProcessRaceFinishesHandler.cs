@@ -49,9 +49,9 @@ public sealed class ProcessRaceFinishesHandler : IRequestHandler<ProcessRaceFini
             race.FinishRace();
             successCount++;
             _logger.LogInformation(
-                "🏆 Finished race {RaceId}: {RaceName} - Results: [{Results}]", 
+                "🏆 Finished race {RaceId}: {RaceName} - Results: [{Results}]",
                 race.Id,
-                race.RaceName, 
+                race.RaceName,
                 string.Join(", ", race.Result!));
         }
 

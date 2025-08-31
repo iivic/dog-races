@@ -9,7 +9,7 @@ namespace DogRaces.Api.IntegrationTests.Infrastructure;
 public class TestWalletService : IWalletService
 {
     private readonly IWalletService _innerService;
-    
+
     public TestWalletService()
     {
         _innerService = new Application.Services.WalletService();

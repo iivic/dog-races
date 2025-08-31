@@ -16,10 +16,10 @@ public static class ServiceCollectionExtensions
     {
         // Add MediatR for CQRS pattern
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ServiceCollectionExtensions).Assembly));
-        
+
         // Register wallet service as singleton (in-memory state needs to persist)
         services.AddSingleton<IWalletService, WalletService>();
-        
+
         return services;
     }
 }

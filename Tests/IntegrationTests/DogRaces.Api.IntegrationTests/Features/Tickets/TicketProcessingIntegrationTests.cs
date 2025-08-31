@@ -1,4 +1,3 @@
-using System.Net.Http.Json;
 using DogRaces.Api.IntegrationTests.Infrastructure;
 using DogRaces.Application.Features.Tickets.Commands.PlaceBet;
 using DogRaces.Application.Features.Tickets.Commands.ProcessUnprocessedTickets;
@@ -9,6 +8,7 @@ using DogRaces.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http.Json;
 using Xunit;
 
 namespace DogRaces.Api.IntegrationTests.Features.Tickets;
@@ -32,13 +32,13 @@ public class TicketProcessingIntegrationTests : IClassFixture<IntegrationTestWeb
 
         using var scope = _factory.Services.CreateScope();
         var sender = scope.ServiceProvider.GetRequiredService<ISender>();
-        
+
         // Create a race and place a bet
         var (raceId, ticketId) = await CreateRaceAndPlaceBet(1, BetType.Winner, 10m);
-        
+
         // Finish the race with winning results (selection 1 wins)
         await FinishRaceWithResults(raceId, [1, 2, 3]);
-        
+
         // Process individual bets to set IsWinning flags
         await ProcessBetsForRace(raceId);
 
@@ -69,13 +69,13 @@ public class TicketProcessingIntegrationTests : IClassFixture<IntegrationTestWeb
 
         using var scope = _factory.Services.CreateScope();
         var sender = scope.ServiceProvider.GetRequiredService<ISender>();
-        
+
         // Create a race and place a bet on a losing selection
         var (raceId, ticketId) = await CreateRaceAndPlaceBet(4, BetType.Winner, 10m);
-        
+
         // Finish the race with results where selection 4 loses
         await FinishRaceWithResults(raceId, [1, 2, 3]);
-        
+
         // Process individual bets to set IsWinning flags
         await ProcessBetsForRace(raceId);
 
@@ -106,16 +106,16 @@ public class TicketProcessingIntegrationTests : IClassFixture<IntegrationTestWeb
 
         using var scope = _factory.Services.CreateScope();
         var sender = scope.ServiceProvider.GetRequiredService<ISender>();
-        
+
         // Create a race and place multiple bets - one winning, one losing (ticket should lose overall)
         var (raceId, ticketId) = await CreateRaceAndPlaceMultipleBets(raceId: 0, [
             (1, BetType.Winner), // This wins (1 is winner)
-            (4, BetType.Winner)  // This loses (4 is not winner) - whole ticket loses
+            (4, BetType.Winner) // This loses (4 is not winner) - whole ticket loses
         ], 10m);
-        
+
         // Finish the race with results
         await FinishRaceWithResults(raceId, [1, 2, 3]);
-        
+
         // Process individual bets to set IsWinning flags
         await ProcessBetsForRace(raceId);
 
@@ -141,13 +141,13 @@ public class TicketProcessingIntegrationTests : IClassFixture<IntegrationTestWeb
 
         using var scope = _factory.Services.CreateScope();
         var sender = scope.ServiceProvider.GetRequiredService<ISender>();
-        
+
         // Create a race and place a Top2 bet on second place
         var (raceId, ticketId) = await CreateRaceAndPlaceBet(2, BetType.Top2, 10m);
-        
+
         // Finish the race with results where selection 2 is second
         await FinishRaceWithResults(raceId, [1, 2, 3]);
-        
+
         // Process individual bets to set IsWinning flags
         await ProcessBetsForRace(raceId);
 
@@ -191,7 +191,7 @@ public class TicketProcessingIntegrationTests : IClassFixture<IntegrationTestWeb
 
         using var scope = _factory.Services.CreateScope();
         var sender = scope.ServiceProvider.GetRequiredService<ISender>();
-        
+
         // Create a race and place a bet but don't finish the race
         var (raceId, ticketId) = await CreateRaceAndPlaceBet(1, BetType.Winner, 10m);
         // Note: Not finishing the race, so bets won't have IsWinning set
@@ -213,7 +213,8 @@ public class TicketProcessingIntegrationTests : IClassFixture<IntegrationTestWeb
     /// <summary>
     /// Helper method to create a race and place a single bet
     /// </summary>
-    private async Task<(long raceId, Guid ticketId)> CreateRaceAndPlaceBet(int selection, BetType betType, decimal stake)
+    private async Task<(long raceId, Guid ticketId)> CreateRaceAndPlaceBet(int selection, BetType betType,
+        decimal stake)
     {
         // Create a race
         using var scope = _factory.Services.CreateScope();
@@ -233,7 +234,7 @@ public class TicketProcessingIntegrationTests : IClassFixture<IntegrationTestWeb
 
         var response = await _httpClient.PostAsJsonAsync("/api/tickets/place-bet", placeBetRequest);
         var result = await response.Content.ReadFromJsonAsync<PlaceBetResponse>();
-        
+
         Assert.NotNull(result);
         Assert.True(result.Success);
         Assert.NotNull(result.TicketId);
@@ -244,12 +245,13 @@ public class TicketProcessingIntegrationTests : IClassFixture<IntegrationTestWeb
     /// <summary>
     /// Helper method to create a race and place multiple bets on a single ticket
     /// </summary>
-    private async Task<(long raceId, Guid ticketId)> CreateRaceAndPlaceMultipleBets(long raceId, (int selection, BetType betType)[] bets, decimal stake)
+    private async Task<(long raceId, Guid ticketId)> CreateRaceAndPlaceMultipleBets(long raceId,
+        (int selection, BetType betType)[] bets, decimal stake)
     {
         // Create a race if not provided
         using var scope = _factory.Services.CreateScope();
         Race race;
-        
+
         if (raceId == 0)
         {
             var testDataService = scope.ServiceProvider.GetRequiredService<TestDataSeedService>();
@@ -260,12 +262,12 @@ public class TicketProcessingIntegrationTests : IClassFixture<IntegrationTestWeb
         // Find the race odds for each bet
         var context = scope.ServiceProvider.GetRequiredService<DogRaces.Application.Data.IDogRacesContext>();
         var betRequests = new List<BetRequest>();
-        
+
         foreach (var (selection, betType) in bets)
         {
             var raceOdds = await context.RaceOdds
                 .FirstAsync(ro => ro.RaceId == raceId && ro.Selection == selection && ro.BetType == betType);
-            
+
             betRequests.Add(new BetRequest(RaceOddsId: raceOdds.Id));
         }
 
@@ -277,7 +279,7 @@ public class TicketProcessingIntegrationTests : IClassFixture<IntegrationTestWeb
 
         var response = await _httpClient.PostAsJsonAsync("/api/tickets/place-bet", placeBetRequest);
         var result = await response.Content.ReadFromJsonAsync<PlaceBetResponse>();
-        
+
         Assert.NotNull(result);
         Assert.True(result.Success);
         Assert.NotNull(result.TicketId);
@@ -292,7 +294,7 @@ public class TicketProcessingIntegrationTests : IClassFixture<IntegrationTestWeb
     {
         using var scope = _factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<DogRaces.Application.Data.IDogRacesContext>();
-        
+
         var raceEntity = await context.Races.FindAsync(raceId);
         if (raceEntity != null)
         {
@@ -300,11 +302,12 @@ public class TicketProcessingIntegrationTests : IClassFixture<IntegrationTestWeb
             raceEntity.CloseBetting();
             raceEntity.StartRace();
             raceEntity.FinishRace();
-            
+
             // Override the results with our specific results
-            var resultField = typeof(Race).GetField("_result", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var resultField = typeof(Race).GetField("_result",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             resultField?.SetValue(raceEntity, results);
-            
+
             await context.SaveChangesAsync();
         }
     }
@@ -316,18 +319,18 @@ public class TicketProcessingIntegrationTests : IClassFixture<IntegrationTestWeb
     {
         using var scope = _factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<DogRaces.Application.Data.IDogRacesContext>();
-        
+
         var race = await context.Races
             .Include(r => r.Bets)
             .FirstOrDefaultAsync(r => r.Id == raceId);
-            
+
         if (race?.Result != null)
         {
             foreach (var bet in race.Bets)
             {
                 bet.ProcessResult(race.Result);
             }
-            
+
             await context.SaveChangesAsync();
         }
     }
@@ -339,7 +342,7 @@ public class TicketProcessingIntegrationTests : IClassFixture<IntegrationTestWeb
     {
         using var scope = _factory.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<DogRaces.Application.Data.IDogRacesContext>();
-        
+
         var ticket = await context.Tickets.FindAsync(ticketId);
         Assert.NotNull(ticket);
         Assert.Equal(expectedStatus, ticket.Status);

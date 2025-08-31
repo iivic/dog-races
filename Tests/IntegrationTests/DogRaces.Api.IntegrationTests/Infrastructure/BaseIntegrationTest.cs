@@ -1,7 +1,7 @@
+using DogRaces.Application.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using System.Text.Json;
-using DogRaces.Application.Interfaces;
 using Xunit;
 
 namespace DogRaces.Api.IntegrationTests.Infrastructure;
@@ -31,11 +31,11 @@ public abstract class BaseIntegrationTest : IClassFixture<IntegrationTestWebAppF
     {
         // Create a new client for each test and reset wallet to ensure clean state
         _client = _factory.CreateClient();
-        
+
         // Reset the wallet to default state before each test
         var walletService = _scope.ServiceProvider.GetRequiredService<IWalletService>();
         walletService.ResetWallet(100m);
-        
+
         return Task.CompletedTask;
     }
 

@@ -39,4 +39,3 @@ public class RaceOddsConfiguration : IEntityTypeConfiguration<RaceOdds>
             .IsUnique();
     }
 }
-

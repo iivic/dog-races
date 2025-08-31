@@ -16,7 +16,7 @@ public class ReserveFundsHandler : IRequestHandler<ReserveFundsCommand, ReserveF
     {
         var ticketId = Guid.NewGuid();
         var success = _walletService.TryReserveForTicket(request.Amount, ticketId);
-        
+
         var response = new ReserveFundsResponse(
             success,
             ticketId,

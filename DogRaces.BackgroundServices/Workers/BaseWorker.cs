@@ -9,8 +9,8 @@ namespace DogRaces.BackgroundServices.Workers;
 /// logging, and service scope management.
 /// </summary>
 public abstract class BaseWorker(
-    ILogger<BaseWorker> logger, 
-    IServiceProvider serviceProvider, 
+    ILogger<BaseWorker> logger,
+    IServiceProvider serviceProvider,
     int executeEverySeconds) : BackgroundService
 {
     protected ILogger<BaseWorker> Logger { get; } = logger;
@@ -18,7 +18,7 @@ public abstract class BaseWorker(
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         Logger.LogInformation("{Name} started", GetType().Name);
-        
+
         while (!stoppingToken.IsCancellationRequested)
         {
             try

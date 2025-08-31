@@ -16,7 +16,7 @@ public class ResetWalletHandler : IRequestHandler<ResetWalletCommand, ResetWalle
     {
         var balance = request.StartingBalance ?? 100m;
         _walletService.ResetWallet(balance);
-        
+
         var response = new ResetWalletResponse(
             $"Wallet reset with balance: {balance}",
             _walletService.GetWalletStatus()

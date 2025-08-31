@@ -40,4 +40,3 @@ public class TicketConfiguration : IEntityTypeConfiguration<Ticket>
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
-

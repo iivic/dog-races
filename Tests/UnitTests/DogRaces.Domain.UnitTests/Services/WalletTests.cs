@@ -1,5 +1,5 @@
-using DogRaces.Domain.Services;
 using DogRaces.Domain.Enums;
+using DogRaces.Domain.Services;
 using Xunit;
 
 namespace DogRaces.Domain.UnitTests.Services;
@@ -116,7 +116,7 @@ public class WalletTests
         // Act - Reserve some funds
         wallet.TryReserve(30m, ticketId1);
         wallet.TryReserve(20m, ticketId2);
-        
+
         // Release one reservation and add payout
         wallet.Release(30m, ticketId1);
         wallet.AddPayout(50m, ticketId2);

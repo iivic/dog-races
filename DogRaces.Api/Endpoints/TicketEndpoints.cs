@@ -30,12 +30,12 @@ public static class TicketEndpoints
     private static async Task<IResult> PlaceBet(PlaceBetCommand request, ISender sender)
     {
         var response = await sender.Send(request);
-        
+
         if (response.Success)
         {
             return Results.Ok(response);
         }
-        
+
         return Results.BadRequest(response);
     }
 }

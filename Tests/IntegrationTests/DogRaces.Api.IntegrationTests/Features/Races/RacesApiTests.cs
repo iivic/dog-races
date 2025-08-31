@@ -1,8 +1,8 @@
-using System.Net;
-using System.Net.Http.Json;
 using DogRaces.Api.IntegrationTests.Infrastructure;
 using DogRaces.Application.Features.Races.Queries.GetActiveRaces;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using System.Net.Http.Json;
 using Xunit;
 
 namespace DogRaces.Api.IntegrationTests.Features.Races;
@@ -71,7 +71,7 @@ public class RacesApiTests : IClassFixture<IntegrationTestWebAppFactory>
         // Assert
         Assert.NotNull(response);
         Assert.NotEmpty(response.Races);
-        
+
         foreach (var race in response.Races)
         {
             Assert.NotNull(race.Odds);

@@ -9,7 +9,7 @@ public record RaceResult(int First, int Second, int Third)
     /// Check if a runner finished in top 2 positions
     /// </summary>
     public bool IsInTop2(int runnerNumber) => First == runnerNumber || Second == runnerNumber;
-    
+
     /// <summary>
     /// Check if a runner finished in top 3 positions
     /// </summary>

@@ -44,4 +44,3 @@ public class BetConfiguration : IEntityTypeConfiguration<Bet>
         builder.HasIndex(b => b.TicketId);
     }
 }
-

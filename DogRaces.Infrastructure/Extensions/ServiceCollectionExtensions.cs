@@ -17,10 +17,10 @@ public static class ServiceCollectionExtensions
     {
         // Add database services
         services.AddDatabase(configuration);
-        
+
         // Add application services (including wallet and MediatR)
         services.AddApplicationServices();
-        
+
         return services;
     }
 }

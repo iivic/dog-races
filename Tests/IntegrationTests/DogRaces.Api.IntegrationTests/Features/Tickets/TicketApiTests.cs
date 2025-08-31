@@ -1,11 +1,11 @@
-using System.Net;
-using System.Net.Http.Json;
 using DogRaces.Api.IntegrationTests.Infrastructure;
 using DogRaces.Application.Features.Tickets.Commands.PlaceBet;
 using DogRaces.Application.Features.Wallet.Commands.ResetWallet;
 using DogRaces.Application.Features.Wallet.Queries.GetWalletStatus;
 using DogRaces.Domain.Enums;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using System.Net.Http.Json;
 using Xunit;
 
 namespace DogRaces.Api.IntegrationTests.Features.Tickets;
@@ -40,7 +40,7 @@ public class TicketApiTests : IClassFixture<IntegrationTestWebAppFactory>
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+
         var result = await response.Content.ReadFromJsonAsync<PlaceBetResponse>();
         Assert.NotNull(result);
         Assert.True(result.Success);
@@ -71,7 +71,7 @@ public class TicketApiTests : IClassFixture<IntegrationTestWebAppFactory>
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+
         var result = await response.Content.ReadFromJsonAsync<PlaceBetResponse>();
         Assert.NotNull(result);
         Assert.True(result.Success);
@@ -97,7 +97,7 @@ public class TicketApiTests : IClassFixture<IntegrationTestWebAppFactory>
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        
+
         var result = await response.Content.ReadFromJsonAsync<PlaceBetResponse>();
         Assert.NotNull(result);
         Assert.False(result.Success);
@@ -120,7 +120,7 @@ public class TicketApiTests : IClassFixture<IntegrationTestWebAppFactory>
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        
+
         var result = await response.Content.ReadFromJsonAsync<PlaceBetResponse>();
         Assert.NotNull(result);
         Assert.False(result.Success);
@@ -148,7 +148,7 @@ public class TicketApiTests : IClassFixture<IntegrationTestWebAppFactory>
         // Assert - Insufficient funds is handled during wallet operation, not validation
         // So it returns BadRequest when validation passes but wallet operation fails
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        
+
         var result = await response.Content.ReadFromJsonAsync<PlaceBetResponse>();
         Assert.NotNull(result);
         Assert.False(result.Success);
@@ -171,7 +171,7 @@ public class TicketApiTests : IClassFixture<IntegrationTestWebAppFactory>
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        
+
         var result = await response.Content.ReadFromJsonAsync<PlaceBetResponse>();
         Assert.NotNull(result);
         Assert.False(result.Success);
@@ -210,7 +210,7 @@ public class TicketApiTests : IClassFixture<IntegrationTestWebAppFactory>
         // Check wallet balance was reduced
         var finalBalanceResponse = await _httpClient.GetFromJsonAsync<GetWalletStatusResponse>("/api/wallet/balance");
         Assert.NotNull(finalBalanceResponse);
-        
+
         Assert.Equal(initialBalance - 10.0m, finalBalanceResponse.AvailableBalance);
         Assert.Equal(0m, finalBalanceResponse.ReservedAmount); // Should be committed, not reserved
     }
@@ -240,7 +240,7 @@ public class TicketApiTests : IClassFixture<IntegrationTestWebAppFactory>
         // Check wallet balance unchanged
         var finalBalanceResponse = await _httpClient.GetFromJsonAsync<GetWalletStatusResponse>("/api/wallet/balance");
         Assert.NotNull(finalBalanceResponse);
-        
+
         Assert.Equal(initialBalance, finalBalanceResponse.AvailableBalance);
         Assert.Equal(0m, finalBalanceResponse.ReservedAmount);
     }
@@ -253,12 +253,12 @@ public class TicketApiTests : IClassFixture<IntegrationTestWebAppFactory>
         await EnsureRacesAndOddsExist();
 
         // Act & Assert - Place multiple bets in sequence
-        
+
         // First bet
         var firstBet = new PlaceBetCommand(10m, [new BetRequest(1)]);
         var firstResponse = await _httpClient.PostAsJsonAsync("/api/tickets/place-bet", firstBet);
         Assert.Equal(HttpStatusCode.OK, firstResponse.StatusCode);
-        
+
         var firstResult = await firstResponse.Content.ReadFromJsonAsync<PlaceBetResponse>();
         Assert.NotNull(firstResult);
         Assert.True(firstResult.Success);
@@ -281,7 +281,7 @@ public class TicketApiTests : IClassFixture<IntegrationTestWebAppFactory>
         // Try bet with insufficient funds
         var insufficientBet = new PlaceBetCommand(30m, [new BetRequest(3)]);
         var insufficientResponse = await _httpClient.PostAsJsonAsync("/api/tickets/place-bet", insufficientBet);
-        
+
         var insufficientResult = await insufficientResponse.Content.ReadFromJsonAsync<PlaceBetResponse>();
         Assert.NotNull(insufficientResult);
         Assert.False(insufficientResult.Success);
@@ -300,7 +300,7 @@ public class TicketApiTests : IClassFixture<IntegrationTestWebAppFactory>
     {
         using var scope = _factory.Services.CreateScope();
         var testDataService = scope.ServiceProvider.GetRequiredService<TestDataSeedService>();
-        
+
         // Create test races with odds
         await testDataService.CreateTestRace(DateTimeOffset.UtcNow.AddMinutes(10));
         await testDataService.CreateTestRace(DateTimeOffset.UtcNow.AddMinutes(15));

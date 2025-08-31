@@ -1,10 +1,10 @@
+using DogRaces.Infrastructure.Database;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using DogRaces.Infrastructure.Database;
 using Testcontainers.PostgreSql;
 using Xunit;
 
@@ -28,7 +28,7 @@ public sealed class IntegrationTestWebAppFactory : WebApplicationFactory<Program
         using var scope = Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<DogRacesContext>();
         await context.Database.MigrateAsync();
-        
+
         var testDataSeedService = scope.ServiceProvider.GetRequiredService<TestDataSeedService>();
         await testDataSeedService.SeedTestData(CancellationToken.None);
     }

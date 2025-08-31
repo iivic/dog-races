@@ -15,7 +15,7 @@ public class ReleaseFundsHandler : IRequestHandler<ReleaseFundsCommand, ReleaseF
     public Task<ReleaseFundsResponse> Handle(ReleaseFundsCommand request, CancellationToken cancellationToken)
     {
         _walletService.ReleaseForTicket(request.Amount, request.TicketId);
-        
+
         var response = new ReleaseFundsResponse(
             $"Released {request.Amount} for ticket {request.TicketId}",
             _walletService.GetWalletStatus()

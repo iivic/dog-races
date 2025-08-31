@@ -36,7 +36,7 @@ public class RaceOddsFactory
         {
             var successCount = _simulatedResults.Count(r => r.First == runnerNumber);
             var odds = OddsCalculator.GetOdds(successCount, _simulatedResults.Count);
-            
+
             yield return new RaceOdds(
                 id: 0,
                 raceId: raceId,
@@ -56,7 +56,7 @@ public class RaceOddsFactory
         {
             var successCount = _simulatedResults.Count(r => r.IsInTop2(runnerNumber));
             var odds = OddsCalculator.GetOdds(successCount, _simulatedResults.Count);
-            
+
             yield return new RaceOdds(
                 id: 0,
                 raceId: raceId,
@@ -76,7 +76,7 @@ public class RaceOddsFactory
         {
             var successCount = _simulatedResults.Count(r => r.IsInTop3(runnerNumber));
             var odds = OddsCalculator.GetOdds(successCount, _simulatedResults.Count);
-            
+
             yield return new RaceOdds(
                 id: 0,
                 raceId: raceId,
@@ -94,17 +94,17 @@ public class RaceOddsFactory
     private List<RaceResult> ConvertToRaceResults(List<int> randomNumbers)
     {
         var results = new List<RaceResult>();
-        
+
         // Process numbers in groups of 3 (representing 1st, 2nd, 3rd places)
         for (var i = 0; i <= randomNumbers.Count - 3; i += 3)
         {
             var first = randomNumbers[i];
-            var second = randomNumbers[i + 1]; 
+            var second = randomNumbers[i + 1];
             var third = randomNumbers[i + 2];
-            
+
             results.Add(new RaceResult(first, second, third));
         }
-        
+
         return results;
     }
 }

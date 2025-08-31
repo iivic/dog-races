@@ -9,22 +9,22 @@ public enum TicketStatus
     /// Ticket is created but not yet processed
     /// </summary>
     Pending = 1,
-    
+
     /// <summary>
     /// Ticket was rejected due to validation failures
     /// </summary>
     Rejected = 2,
-    
+
     /// <summary>
     /// Ticket was accepted and bets are active
     /// </summary>
     Success = 3,
-    
+
     /// <summary>
     /// Ticket is winning and payout processed
     /// </summary>
     Won = 4,
-    
+
     /// <summary>
     /// Ticket is not winning
     /// </summary>

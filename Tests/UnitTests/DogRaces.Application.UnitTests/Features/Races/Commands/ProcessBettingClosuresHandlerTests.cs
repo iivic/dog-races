@@ -21,9 +21,9 @@ public class ProcessBettingClosuresHandlerTests
         _contextMock = new Mock<IDogRacesContext>();
         _loggerMock = new Mock<ILogger<ProcessBettingClosuresHandler>>();
         _racesDbSetMock = new Mock<DbSet<Race>>();
-        
+
         _contextMock.Setup(x => x.Races).Returns(_racesDbSetMock.Object);
-        
+
         _handler = new ProcessBettingClosuresHandler(_contextMock.Object, _loggerMock.Object);
     }
 
@@ -37,7 +37,7 @@ public class ProcessBettingClosuresHandlerTests
         var raceInPast = CreateScheduledRace(now.AddSeconds(-10));
 
         var races = new List<Race> { raceStartingInThreeSeconds, raceFarInFuture, raceInPast }.AsQueryable();
-        
+
         SetupDbSetMock(races);
 
         // Act

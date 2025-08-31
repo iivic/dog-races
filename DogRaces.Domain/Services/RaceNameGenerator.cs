@@ -10,13 +10,13 @@ public class RaceNameGenerator
         "Lightning Ridge", "Moonlight Bay", "Crystal Falls", "Storm Peak",
         "Eagle Heights", "Diamond Downs", "Phoenix Park", "Emerald Fields"
     };
-    
+
     private readonly string[] _raceTypes = {
         "Championship Stakes", "Derby Classic", "Sprint Cup", "Grand Prix",
         "Elite Trophy", "Masters Cup", "Victory Stakes", "Premier Classic",
         "Royal Challenge", "Champions League", "Speed Trial", "Glory Run"
     };
-    
+
     private readonly string[] _adjectives = {
         "Lightning", "Golden", "Midnight", "Diamond", "Thunder", "Silver",
         "Crimson", "Sapphire", "Emerald", "Phoenix", "Storm", "Royal",

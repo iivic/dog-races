@@ -1,143 +1,322 @@
 # 🏁 Dog Race Betting System
 
-A comprehensive dog race betting system built with .NET 9, featuring automated race scheduling, betting management, and real-time result processing.
+A real-time dog race betting system built with .NET 9, Entity Framework Core, and PostgreSQL. The system allows users to place bets on simulated dog races with automatic race generation, odds calculation, and ticket processing.
+
+## 🏗️ Architecture
+
+The solution follows a **Layered arhitecture** approach with **Domain-Driven Design (DDD)** principles:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Presentation Layer                        │
+├─────────────────────────────────────────────────────────────┤
+│  DogRaces.Api          │  DogRaces.BackgroundServices       │
+│  • Minimal APIs        │  • Race Scheduling Worker          │
+│  • Swagger/OpenAPI     │  • Ticket Processing Worker        │
+└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                   Application Layer                         │
+├─────────────────────────────────────────────────────────────┤
+│              DogRaces.Application                           │
+│  • CQRS with MediatR   • Commands & Queries                │
+│  • Feature Folders     • Validation Logic                  │
+│  • Business Rules      • Data Contracts                    │
+└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    Domain Layer                             │
+├─────────────────────────────────────────────────────────────┤
+│                DogRaces.Domain                              │
+│  • Rich Domain Entities  • Value Objects                   │
+│  • Business Logic        • Domain Services                 │
+│  • Invariants            • Enums & Constants               │
+└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                 Infrastructure Layer                        │
+├─────────────────────────────────────────────────────────────┤
+│             DogRaces.Infrastructure                         │
+│  • Entity Framework Core  • Database Configurations        │
+│  • PostgreSQL Provider    • Migrations                     │
+│  • Repository Pattern     • External Services              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## 🎯 Key Features
+
+### 🏇 Race Management
+
+- **Automatic Race Generation**: Background service creates races every 2 seconds
+- **Race Lifecycle**: Scheduled → Betting Open → Betting Closed → Running → Finished
+- **Random Results**: Each race uses 100 random numbers (1-6) to determine outcomes
+- **Fun Race Names**: Auto-generated creative race names
+- **Configurable Settings**: Minimum active races, race duration, betting windows
+
+### 💰 Betting System
+
+- **Multiple Bet Types**: Winner, Top2, Top3
+- **Dynamic Odds**: Calculated based on statistical simulation of race outcomes
+- **Ticket System**: Multiple bets per ticket with combined odds
+- **Validation**: Stake limits, race availability, timing checks
+- **Payment Flow**: Reserve → Validate → Commit pattern
+
+### 🎲 Odds Calculation
+
+- **Statistical Approach**: Uses 100 random numbers to simulate ~33 race outcomes
+- **Bet Type Specific**: Different minimum odds for Winner (1.1x), Top2 (1.05x), Top3 (1.03x)
+- **Fair Odds**: Based on actual probability calculations
+- **Real-time Updates**: Odds generated at race creation
+
+### 💳 Wallet System
+
+- **In-Memory Simulation**: 100 units starting balance
+- **Transaction Tracking**: All wallet operations logged
+- **Fund Management**: Reserve, commit, release, payout operations
+- **Balance Validation**: Prevents overdrafts and invalid operations
+
+### 🔄 Automated Processing
+
+- **Race Scheduling Worker**: Maintains minimum active races (7 by default)
+- **Ticket Processing Worker**: Processes finished tickets every 5 seconds
+- **Result Determination**: Automatic race finishing and result calculation
+- **Payout Processing**: Automatic winnings distribution
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- .NET 9.0 SDK
-- PostgreSQL database
+- **.NET 9 SDK** - [Download here](https://dotnet.microsoft.com/download/dotnet/9.0)
+- **PostgreSQL 13+** - [Download here](https://www.postgresql.org/download/)
+- **Docker** (optional, for containerized database use in integration tests)
 
-### Quick Start
+### 🗄️ Database Setup
 
-1. **Setup Database Connection**
+#### Option 1: Local PostgreSQL
 
-   ```bash
-   # Set your PostgreSQL connection string
-   export ConnectionStrings__DefaultConnection="Host=localhost;Database=DogRaces;Username=your_user;Password=your_password"
-   ```
+```bash
+# Create database
+createdb dograces
 
-2. **Run Migrations**
-
-   ```bash
-   cd DogRaces.Infrastructure
-   dotnet ef database update
-   ```
-
-3. **Start the Background Service** (Race Management)
-
-   ```bash
-   cd DogRaces.BackgroundServices
-   dotnet run
-   ```
-
-4. **Start the API** (In a separate terminal)
-   ```bash
-   cd DogRaces.Api
-   dotnet run
-   ```
-
-## 🎯 What's Implemented
-
-### ✅ **Phase 5: Race Auto-Generation with Background Services**
-
-#### 🏆 **Core Features**
-
-- **Automated Race Scheduling**: Maintains minimum 5 concurrent races
-- **Full Race Lifecycle**: Scheduled → Betting Closed (5s before start) → Running → Finished
-- **Random Result Generation**: Each race uses 100 random numbers to determine odds and results
-- **Fun Race Names**: Auto-generated creative race names
-- **Real-time Processing**: Background service checks every 2 seconds
-
-#### 🎲 **Race System**
-
-- **Timing**: 5-second intervals between races, 10-second race duration
-- **Odds Calculation**: Based on random number frequency with house edge
-- **Result Selection**: Randomly picks 3 numbers from the race's sequence
-- **Race Validation**: Ensures no number appears 3 times consecutively
-
-#### 🎮 **API Endpoints**
-
-```http
-GET /api/races/active          # Get all active races
-GET /api/races/count           # Get active race count
-GET /api/configuration         # Get system configuration
+# Update connection string in appsettings.Development.json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Database=dograces;Username=your_user;Password=your_password"
+  }
+}
 ```
 
-#### 💰 **Wallet System**
+#### Option 2: Docker PostgreSQL
 
-```http
-GET /api/wallet/status         # Get wallet balance and transactions
-POST /api/wallet/reset         # Reset wallet to starting balance
-POST /api/wallet/reserve       # Reserve funds for betting
-POST /api/wallet/release       # Release reserved funds
+```bash
+# Run PostgreSQL in Docker
+docker run --name dograces-postgres \
+  -e POSTGRES_DB=dograces \
+  -e POSTGRES_USER=dograces \
+  -e POSTGRES_PASSWORD=dograces123 \
+  -p 5432:5432 \
+  -d postgres:15
+
+# Connection string for Docker
+"DefaultConnection": "Host=localhost;Database=dograces;Username=dograces;Password=dograces123"
 ```
 
-### 🏗️ **Architecture**
+### 📦 Installation & Setup
 
-- **Domain-Driven Design**: Rich entities with business logic
-- **CQRS Pattern**: Commands and queries with MediatR
-- **Layered Architecture**: Domain → Application → Infrastructure → API
-- **Background Services**: Automated race management
-- **Entity Framework Core**: PostgreSQL with code-first migrations
+1. **Clone and Build**
+
+```bash
+git clone <repository-url>
+cd DogRaces
+dotnet restore
+dotnet build
+```
+
+2. **Run Database Migrations**
+
+```bash
+cd DogRaces.Infrastructure
+dotnet ef database update --startup-project ../DogRaces.Api
+```
+
+3. **Start the Applications**
+
+**Terminal 1 - API Server:**
+
+```bash
+cd DogRaces.Api
+dotnet run
+```
+
+**Terminal 2 - Background Services:**
+
+```bash
+cd DogRaces.BackgroundServices
+dotnet run
+```
+
+### 🌐 Access Points
+
+- **API Documentation**: http://localhost:5000/swagger
+- **API Base URL**: http://localhost:5000/api
+- **Health Check**: http://localhost:5000/health
 
 ## 🧪 Testing
 
-### Run All Tests
+### 🔧 Running Tests
 
 ```bash
-dotnet test --verbosity minimal
+# Run all tests
+dotnet test
+
+# Run specific test projects
+dotnet test Tests/UnitTests/DogRaces.Domain.UnitTests/
+dotnet test Tests/UnitTests/DogRaces.Application.UnitTests/
+dotnet test Tests/IntegrationTests/DogRaces.Api.IntegrationTests/
+
+# Run with coverage
+dotnet test --collect:"XPlat Code Coverage"
+
+# Run specific test class
+dotnet test --filter "TicketProcessingIntegrationTests"
 ```
 
-### Test Categories
+### 📋 Test Categories
 
-- **Domain Unit Tests**: Entity logic and business rules
-- **Integration Tests**: API endpoints with in-memory database
+#### **Unit Tests**
 
-## 📊 Monitoring Race System
+- **Domain Tests**: Entity validation, business rules, value objects
+- **Application Tests**: Command/query handlers, business logic
 
-### Check Race Status
+#### **Integration Tests**
+
+- **API Tests**: End-to-end API functionality
+- **Database Tests**: Entity Framework operations
+- **Wallet Tests**: Payment flow validation
+- **Ticket Processing**: Complete betting workflow
+
+#### **Test Database**
+
+Integration tests use **Testcontainers** with PostgreSQL for isolated testing:
+
+- Automatic Docker container management
+- Clean database per test run
+- No manual setup required
+
+## 🎮 Usage Examples
+
+### 📊 API Endpoints
+
+- **Wallet Balance**: `GET /api/wallet/balance`
+- **Active Races**: `GET /api/races/active`
+- **Race Odds**: `GET /api/races/{id}/odds`
+- **Place Bet**: `POST /api/tickets/place-bet`
+- **Reset Wallet**: `POST /api/wallet/reset` (testing only)
+
+## 🔧 Configuration
+
+### Database Configuration
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Database=dograces;Username=user;Password=pass"
+  }
+}
+```
+
+### System Configuration (Database)
+
+The system uses database-stored configuration with these defaults:
+
+- **Minimum Active Races**: 7
+- **Race Duration**: 30 seconds
+- **Betting Close Time**: 5 seconds before race start
+- **Minimum Ticket Stake**: 0.1
+- **Maximum Ticket Win**: 10,000
+- **Worker Intervals**: Race scheduling (2s), Ticket processing (5s)
+
+## 🎯 Business Rules
+
+### 🏇 Race Rules
+
+- Races have 6 selections (dogs numbered 1-6)
+- Each race generates 100 random numbers for result determination
+- Betting closes 5 seconds before race start
+- Race results are top 3 positions from random selection
+
+### 💰 Betting Rules
+
+- **Winner**: Dog must finish 1st
+- **Top2**: Dog must finish 1st or 2nd
+- **Top3**: Dog must finish 1st, 2nd, or 3rd
+- All bets on a ticket must win for the ticket to win
+- Payout = stake × combined odds of all bets
+
+### 💳 Payment Rules
+
+1. **Validation**: Check race availability, stake limits, odds
+2. **Reserve Funds**: Hold stake amount in wallet
+3. **Revalidation**: Ensure race hasn't started
+4. **Finalization**: Commit funds and approve ticket
+
+### 🏆 Payout Rules
+
+- Winning tickets: Stake × combined odds
+- Losing tickets: No payout (stake lost)
+- Processing occurs automatically after race completion
+
+## 🚨 Troubleshooting
+
+### Common Issues
+
+**Database Connection Issues:**
 
 ```bash
-curl http://localhost:5095/api/races/active
+# Check PostgreSQL is running
+pg_isready -h localhost -p 5432
+
+# Verify connection string in appsettings.json
+# Run migrations if database is empty
+dotnet ef database update --startup-project DogRaces.Api
 ```
 
-### Check System Configuration
+**Port Conflicts:**
 
 ```bash
-curl http://localhost:5095/api/configuration
+# API runs on port 5000 by default
+# Change in launchSettings.json if needed
+# Background services run on different ports
 ```
 
-### Monitor Logs
+**Test Failures:**
 
-The background service provides rich logging:
+```bash
+# Ensure Docker is running for integration tests
+docker --version
 
-- 🔒 Betting closures
-- 🚀 Race starts
-- 🏆 Race finishes with results
-- ➕ New race creation
-
-## 🎯 Race Lifecycle Example
-
-```
-1. Race Created    : "Thunder Valley Sprint" starts in 15 seconds
-2. Betting Open    : Players can place bets (10 seconds window)
-3. Betting Closed  : 5 seconds before race start
-4. Race Running    : 10-second race duration
-5. Race Finished   : Results determined from random sequence
-6. Payout Processing: Winners receive payouts
-7. Next Race      : New race created automatically
+# Clean and rebuild
+dotnet clean
+dotnet build
 ```
 
-## 🔮 Coming Next
+## 🤝 Contributing
 
-- **Phase 6**: Betting System (Tickets and Bets)
-- **Phase 7**: API Endpoints for Core Operations
-- **Phase 8**: Background Services for Race Maintenance
-- **Phase 9**: Result Processing and Payout System
-- **Phase 10**: Real-time Updates with SignalR
+1. Fork the repository
+2. Create a feature branch
+3. Write tests for new functionality
+4. Ensure all tests pass
+5. Submit a pull request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
 
-**Built with ❤️ using .NET 9, PostgreSQL, and Domain-Driven Design principles.**
+## 🎉 Quick Start
+
+1. **Start the system**: Run both API and Background Services
+2. **Wait for races**: System generates races automatically (2-3 seconds)
+3. **Access Swagger**: Visit http://localhost:5000/swagger to interact with APIs
+4. **Place bets**: Use the API to place bets on active races
+5. **Check results**: Monitor wallet balance to see if you won!
+
+🎊 **Enjoy betting on the races!** 🏁

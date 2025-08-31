@@ -21,9 +21,9 @@ public class ProcessRaceStartsHandlerTests
         _contextMock = new Mock<IDogRacesContext>();
         _loggerMock = new Mock<ILogger<ProcessRaceStartsHandler>>();
         _racesDbSetMock = new Mock<DbSet<Race>>();
-        
+
         _contextMock.Setup(x => x.Races).Returns(_racesDbSetMock.Object);
-        
+
         _handler = new ProcessRaceStartsHandler(_contextMock.Object, _loggerMock.Object);
     }
 

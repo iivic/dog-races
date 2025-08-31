@@ -13,12 +13,12 @@ public static class OddsCalculator
     /// <returns>Calculated odds with minimum floor applied</returns>
     public static decimal GetOdds(int successCount, int totalSimulations = 33)
     {
-        if (successCount == 0) 
+        if (successCount == 0)
             return 99.0m; // Maximum odds for impossible outcomes
-        
+
         var probability = (decimal)successCount / totalSimulations;
         var rawOdds = 1 / probability;
-        
+
         // Apply minimum odds floor to ensure reasonable payouts
         return Math.Max(rawOdds, 1.05m);
     }

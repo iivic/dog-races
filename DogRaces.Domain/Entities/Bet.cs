@@ -25,17 +25,17 @@ public class Bet
     public long Id { get; private set; }
     public long RaceId { get; private set; }
     public Guid TicketId { get; private set; }
-    
+
     /// <summary>
     /// Selected dog number (1-6)
     /// </summary>
     public int Selection { get; private set; }
-    
+
     /// <summary>
     /// Type of bet (Winner, Top2, Top3)
     /// </summary>
     public BetType BetType { get; private set; }
-    
+
     /// <summary>
     /// Odds at the time of bet placement
     /// </summary>
@@ -45,7 +45,7 @@ public class Bet
     /// Whether this bet is winning after the race result is published
     /// </summary>
     public bool? IsWinning { get; private set; }
-    
+
     public DateTimeOffset CreatedAt { get; private set; }
 
     // Navigation properties

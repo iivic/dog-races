@@ -24,9 +24,9 @@ public class ProcessUnprocessedTicketsHandlerTests
         _mockWalletService = new Mock<IWalletService>();
         _mockLogger = new Mock<ILogger<ProcessUnprocessedTicketsHandler>>();
         _mockTicketSet = new Mock<DbSet<Ticket>>();
-        
+
         _mockContext.Setup(x => x.Tickets).Returns(_mockTicketSet.Object);
-        
+
         _handler = new ProcessUnprocessedTicketsHandler(
             _mockContext.Object,
             _mockWalletService.Object,
@@ -50,7 +50,7 @@ public class ProcessUnprocessedTicketsHandlerTests
         Assert.Equal(0, result.WinningTickets);
         Assert.Equal(0, result.LosingTickets);
         Assert.Equal(0m, result.TotalPayouts);
-        
+
         _mockWalletService.Verify(x => x.AddPayout(It.IsAny<decimal>(), It.IsAny<Guid>()), Times.Never);
     }
 
@@ -62,7 +62,7 @@ public class ProcessUnprocessedTicketsHandlerTests
         var race = CreateRace(1, [1, 2, 3]); // Selection 1 wins
         var bet = CreateBet(1, race.Id, ticketId, 1, BetType.Winner, 2.0m, isWinning: true);
         var ticket = CreateTicket(ticketId, TicketStatus.Success, 10m, [bet]);
-        
+
         // Set up the ticket to calculate payout correctly
         ticket.ProcessResult(); // This should set TotalPayout based on winning bets
 
@@ -79,7 +79,7 @@ public class ProcessUnprocessedTicketsHandlerTests
         Assert.Equal(1, result.WinningTickets);
         Assert.Equal(0, result.LosingTickets);
         Assert.True(result.TotalPayouts > 0);
-        
+
         _mockWalletService.Verify(x => x.AddPayout(It.IsAny<decimal>(), ticketId), Times.Once);
         _mockContext.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -92,7 +92,7 @@ public class ProcessUnprocessedTicketsHandlerTests
         var race = CreateRace(1, [1, 2, 3]); // Selection 4 loses
         var bet = CreateBet(1, race.Id, ticketId, 4, BetType.Winner, 2.0m, isWinning: false);
         var ticket = CreateTicket(ticketId, TicketStatus.Success, 10m, [bet]);
-        
+
         ticket.ProcessResult(); // This should set status to Lost
 
         var tickets = new List<Ticket> { ticket }.AsQueryable();
@@ -108,7 +108,7 @@ public class ProcessUnprocessedTicketsHandlerTests
         Assert.Equal(0, result.WinningTickets);
         Assert.Equal(1, result.LosingTickets);
         Assert.Equal(0m, result.TotalPayouts);
-        
+
         _mockWalletService.Verify(x => x.AddPayout(It.IsAny<decimal>(), It.IsAny<Guid>()), Times.Never);
         _mockContext.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -120,12 +120,12 @@ public class ProcessUnprocessedTicketsHandlerTests
         var winningTicketId = Guid.NewGuid();
         var losingTicketId = Guid.NewGuid();
         var race = CreateRace(1, [1, 2, 3]);
-        
+
         // Winning ticket
         var winningBet = CreateBet(1, race.Id, winningTicketId, 1, BetType.Winner, 2.0m, isWinning: true);
         var winningTicket = CreateTicket(winningTicketId, TicketStatus.Success, 10m, [winningBet]);
         winningTicket.ProcessResult();
-        
+
         // Losing ticket
         var losingBet = CreateBet(2, race.Id, losingTicketId, 4, BetType.Winner, 2.0m, isWinning: false);
         var losingTicket = CreateTicket(losingTicketId, TicketStatus.Success, 10m, [losingBet]);
@@ -144,7 +144,7 @@ public class ProcessUnprocessedTicketsHandlerTests
         Assert.Equal(1, result.WinningTickets);
         Assert.Equal(1, result.LosingTickets);
         Assert.True(result.TotalPayouts > 0);
-        
+
         _mockWalletService.Verify(x => x.AddPayout(It.IsAny<decimal>(), winningTicketId), Times.Once);
         _mockWalletService.Verify(x => x.AddPayout(It.IsAny<decimal>(), losingTicketId), Times.Never);
     }
@@ -163,36 +163,36 @@ public class ProcessUnprocessedTicketsHandlerTests
         race.CloseBetting();
         race.StartRace();
         race.FinishRace();
-        
+
         // Set the result using reflection
         var resultField = typeof(Race).GetField("_result", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         resultField?.SetValue(race, result);
-        
+
         return race;
     }
 
     private static Bet CreateBet(long id, long raceId, Guid ticketId, int selection, BetType betType, decimal odds, bool isWinning)
     {
         var bet = new Bet(id, raceId, ticketId, selection, betType, odds);
-        
+
         // Set IsWinning using reflection
         var isWinningField = typeof(Bet).GetProperty("IsWinning");
         isWinningField?.SetValue(bet, isWinning);
-        
+
         return bet;
     }
 
     private static Ticket CreateTicket(Guid id, TicketStatus status, decimal totalStake, IReadOnlyList<Bet> bets)
     {
         var ticket = Ticket.Create(totalStake, bets);
-        
+
         // Set the ID and status using reflection
         var idField = typeof(Ticket).GetProperty("Id");
         idField?.SetValue(ticket, id);
-        
+
         var statusField = typeof(Ticket).GetProperty("Status");
         statusField?.SetValue(ticket, status);
-        
+
         return ticket;
     }
 }

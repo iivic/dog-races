@@ -1,10 +1,10 @@
-using System.Net;
-using System.Net.Http.Json;
 using DogRaces.Api.IntegrationTests.Infrastructure;
-using DogRaces.Application.Features.Wallet.Commands.ReserveFunds;
 using DogRaces.Application.Features.Wallet.Commands.ReleaseFunds;
+using DogRaces.Application.Features.Wallet.Commands.ReserveFunds;
 using DogRaces.Application.Features.Wallet.Commands.ResetWallet;
 using DogRaces.Application.Features.Wallet.Queries.GetWalletStatus;
+using System.Net;
+using System.Net.Http.Json;
 using Xunit;
 
 namespace DogRaces.Api.IntegrationTests.Features.Wallet;
@@ -35,7 +35,7 @@ public class WalletApiTests : IClassFixture<IntegrationTestWebAppFactory>
     {
         // Arrange - Reset wallet to ensure clean state
         await _httpClient.PostAsJsonAsync("/api/wallet/reset", new ResetWalletCommand(100m));
-        
+
         // Act
         var response = await _httpClient.GetFromJsonAsync<GetWalletStatusResponse>("/api/wallet/balance");
 
@@ -57,7 +57,7 @@ public class WalletApiTests : IClassFixture<IntegrationTestWebAppFactory>
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+
         var result = await response.Content.ReadFromJsonAsync<ReserveFundsResponse>();
         Assert.NotNull(result);
         Assert.True(result.Success);
@@ -79,7 +79,7 @@ public class WalletApiTests : IClassFixture<IntegrationTestWebAppFactory>
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+
         var result = await response.Content.ReadFromJsonAsync<ReleaseFundsResponse>();
         Assert.NotNull(result);
         Assert.Contains($"Released {reserveResult.Amount} for ticket {reserveResult.TicketId}", result.Message);
@@ -98,7 +98,7 @@ public class WalletApiTests : IClassFixture<IntegrationTestWebAppFactory>
 
         // Assert - The wallet service returns OK but with success = false for invalid amounts
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+
         var result = await response.Content.ReadFromJsonAsync<ReserveFundsResponse>();
         Assert.NotNull(result);
         Assert.False(result.Success); // Should fail for invalid amounts

@@ -21,7 +21,7 @@ public class DogRacesContextFactory : IDesignTimeDbContextFactory<DogRacesContex
 
         var optionsBuilder = new DbContextOptionsBuilder<DogRacesContext>();
         optionsBuilder.UseNpgsql(connectionString);
-        
+
         return new DogRacesContext(optionsBuilder.Options);
     }
 }

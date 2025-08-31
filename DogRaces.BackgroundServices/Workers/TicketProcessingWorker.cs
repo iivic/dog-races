@@ -11,8 +11,8 @@ namespace DogRaces.BackgroundServices.Workers;
 public class TicketProcessingWorker : BaseWorker
 {
     public TicketProcessingWorker(
-        ILogger<TicketProcessingWorker> logger, 
-        IServiceProvider serviceProvider) 
+        ILogger<TicketProcessingWorker> logger,
+        IServiceProvider serviceProvider)
         : base(logger, serviceProvider, executeEverySeconds: 5) // Check every 5 seconds
     {
     }
@@ -20,10 +20,10 @@ public class TicketProcessingWorker : BaseWorker
     protected override async Task Execute(IServiceScope scope, CancellationToken cancellationToken)
     {
         var sender = scope.ServiceProvider.GetRequiredService<ISender>();
-        
+
         var command = new ProcessUnprocessedTicketsCommand();
         var result = await sender.Send(command, cancellationToken);
-    
+
         if (result.ProcessedTickets > 0)
         {
             Logger.LogInformation(

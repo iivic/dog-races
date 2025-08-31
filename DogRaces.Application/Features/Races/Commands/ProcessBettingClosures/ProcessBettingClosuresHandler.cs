@@ -32,7 +32,7 @@ public sealed class ProcessBettingClosuresHandler : IRequestHandler<ProcessBetti
     private async Task<List<Race>> GetRacesReadyForBettingClosure(CancellationToken cancellationToken)
     {
         var now = DateTimeOffset.UtcNow;
-        
+
         return await _context.Races
             .Where(r => r.Status == RaceStatus.Scheduled && r.StartTime <= now.AddSeconds(5))
             .OrderBy(r => r.StartTime)
@@ -47,7 +47,7 @@ public sealed class ProcessBettingClosuresHandler : IRequestHandler<ProcessBetti
         {
             race.CloseBetting();
             successCount++;
-            _logger.LogInformation("🔒 Closed betting for race {RaceId}: {RaceName}", 
+            _logger.LogInformation("🔒 Closed betting for race {RaceId}: {RaceName}",
                 race.Id, race.RaceName);
         }
 

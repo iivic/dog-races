@@ -35,7 +35,7 @@ public class TestDataSeedService
     public async Task<Race> CreateTestRace(DateTimeOffset? startTime = null, CancellationToken cancellationToken = default)
     {
         var raceStartTime = startTime ?? DateTimeOffset.UtcNow.AddMinutes(5);
-        
+
         var race = new Race(
             id: 0,
             startTime: raceStartTime,

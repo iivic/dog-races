@@ -32,7 +32,7 @@ public sealed class ProcessRaceStartsHandler : IRequestHandler<ProcessRaceStarts
     private async Task<List<Race>> GetRacesReadyToStart(CancellationToken cancellationToken)
     {
         var now = DateTimeOffset.UtcNow;
-        
+
         return await _context.Races
             .Where(r => r.Status == RaceStatus.BettingClosed && r.StartTime <= now)
             .OrderBy(r => r.StartTime)
@@ -48,7 +48,7 @@ public sealed class ProcessRaceStartsHandler : IRequestHandler<ProcessRaceStarts
             race.StartRace();
             successCount++;
             _logger.LogInformation(
-                "🚀 Started race {RaceId}: {RaceName}", 
+                "🚀 Started race {RaceId}: {RaceName}",
                 race.Id,
                 race.RaceName);
         }

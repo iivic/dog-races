@@ -1,7 +1,7 @@
-﻿using DogRaces.BackgroundServices.Workers;
+using DogRaces.BackgroundServices.Workers;
 using DogRaces.Infrastructure.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateApplicationBuilder(args);
 

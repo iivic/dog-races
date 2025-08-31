@@ -58,4 +58,3 @@ public class RaceConfiguration : IEntityTypeConfiguration<Race>
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
-

@@ -8,7 +8,7 @@ public class GlobalConfiguration
     public GlobalConfiguration(
         int id,
         decimal minTicketStake,
-        decimal maxTicketWin, 
+        decimal maxTicketWin,
         int minNumberOfActiveRounds)
     {
         Id = id;
@@ -21,17 +21,17 @@ public class GlobalConfiguration
     /// Single configuration row
     /// </summary>
     public int Id { get; private set; }
-    
+
     /// <summary>
     /// Minimum stake amount per ticket (e.g., 1)
     /// </summary>
     public decimal MinTicketStake { get; private set; }
-    
+
     /// <summary>
     /// Maximum amount a ticket can win (e.g., $10,000)
     /// </summary>
     public decimal MaxTicketWin { get; private set; }
-    
+
     /// <summary>
     /// Minimum number of concurrent active races (default: 7)
     /// </summary>

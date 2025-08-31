@@ -1,8 +1,8 @@
 using DogRaces.Api.IntegrationTests.Infrastructure;
 using DogRaces.Application.Features.Tickets.Commands.PlaceBet;
+using DogRaces.Application.Features.Tickets.Queries.GetTickets;
 using DogRaces.Application.Features.Wallet.Commands.ResetWallet;
 using DogRaces.Application.Features.Wallet.Queries.GetWalletStatus;
-using DogRaces.Domain.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Json;
@@ -291,6 +291,92 @@ public class TicketApiTests : IClassFixture<IntegrationTestWebAppFactory>
         var balanceAfterFailed = await _httpClient.GetFromJsonAsync<GetWalletStatusResponse>("/api/wallet/balance");
         Assert.NotNull(balanceAfterFailed);
         Assert.Equal(25m, balanceAfterFailed.AvailableBalance);
+    }
+
+    [Fact]
+    public async Task GetTickets_WithMultipleTickets_ShouldReturnAllTickets()
+    {
+        // Arrange - Reset wallet and create test data
+        await _httpClient.PostAsJsonAsync("/api/wallet/reset", new ResetWalletCommand(100m));
+        await EnsureRacesAndOddsExist();
+
+        // Place multiple tickets
+        var firstBet = new PlaceBetCommand(10m, [new BetRequest(1)]);
+        var secondBet = new PlaceBetCommand(15m, [new BetRequest(2)]);
+
+        await _httpClient.PostAsJsonAsync("/api/tickets/place-bet", firstBet);
+        await _httpClient.PostAsJsonAsync("/api/tickets/place-bet", secondBet);
+
+        // Act
+        var response = await _httpClient.GetAsync("/api/tickets");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var result = await response.Content.ReadFromJsonAsync<GetTicketsResponse>();
+        Assert.NotNull(result);
+        Assert.Equal(2, result.TotalCount);
+        Assert.Equal(2, result.Tickets.Count());
+
+        // Verify ticket properties
+        var tickets = result.Tickets.ToList();
+        Assert.All(tickets, ticket =>
+        {
+            Assert.NotEqual(Guid.Empty, ticket.Id);
+            Assert.Equal("Success", ticket.Status);
+            Assert.True(ticket.TotalStake > 0);
+            Assert.True(ticket.CreatedAt <= DateTimeOffset.UtcNow);
+            Assert.NotEmpty(ticket.Bets);
+        });
+
+        // Verify tickets are ordered by creation date (newest first)
+        var orderedTickets = tickets.OrderByDescending(t => t.CreatedAt).ToList();
+        Assert.Equal(orderedTickets.Select(t => t.Id), tickets.Select(t => t.Id));
+    }
+
+    [Fact]
+    public async Task GetTickets_WithStatusFilter_ShouldReturnFilteredResults()
+    {
+        // Arrange - This test assumes we can create tickets with different statuses
+        // For now, we can only create Success tickets through the API
+        await _httpClient.PostAsJsonAsync("/api/wallet/reset", new ResetWalletCommand(100m));
+        await EnsureRacesAndOddsExist();
+
+        // Place a ticket
+        var bet = new PlaceBetCommand(10m, [new BetRequest(1)]);
+        await _httpClient.PostAsJsonAsync("/api/tickets/place-bet", bet);
+
+        // Act - Filter by Success status
+        var response = await _httpClient.GetAsync("/api/tickets?status=Success");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var result = await response.Content.ReadFromJsonAsync<GetTicketsResponse>();
+        Assert.NotNull(result);
+        Assert.True(result.TotalCount >= 1);
+        Assert.All(result.Tickets, ticket => Assert.Equal("Success", ticket.Status));
+    }
+
+    [Fact]
+    public async Task GetTickets_WithInvalidStatusFilter_ShouldReturnAllTickets()
+    {
+        // Arrange
+        await _httpClient.PostAsJsonAsync("/api/wallet/reset", new ResetWalletCommand(100m));
+        await EnsureRacesAndOddsExist();
+
+        var bet = new PlaceBetCommand(10m, [new BetRequest(1)]);
+        await _httpClient.PostAsJsonAsync("/api/tickets/place-bet", bet);
+
+        // Act - Use invalid status filter
+        var response = await _httpClient.GetAsync("/api/tickets?status=InvalidStatus");
+
+        // Assert - Should return all tickets (filter ignored)
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var result = await response.Content.ReadFromJsonAsync<GetTicketsResponse>();
+        Assert.NotNull(result);
+        Assert.True(result.TotalCount >= 1);
     }
 
     /// <summary>

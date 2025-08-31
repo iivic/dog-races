@@ -1,4 +1,5 @@
 using DogRaces.Application.Features.Tickets.Commands.PlaceBet;
+using DogRaces.Application.Features.Tickets.Queries.GetTickets;
 using MediatR;
 
 namespace DogRaces.Api.Endpoints;
@@ -21,6 +22,10 @@ public static class TicketEndpoints
             .WithName("PlaceBet")
             .WithSummary("Place a betting ticket with multiple bets");
 
+        tickets.MapGet("/", GetTickets)
+            .WithName("GetTickets")
+            .WithSummary("Get tickets with optional filtering and pagination");
+
         return app;
     }
 
@@ -37,5 +42,19 @@ public static class TicketEndpoints
         }
 
         return Results.BadRequest(response);
+    }
+
+    /// <summary>
+    /// Get tickets with optional filtering and pagination
+    /// </summary>
+    private static async Task<IResult> GetTickets(
+        ISender sender,
+        int? limit = null,
+        int? offset = null,
+        string? status = null)
+    {
+        var query = new GetTicketsQuery(limit, offset, status);
+        var response = await sender.Send(query);
+        return Results.Ok(response);
     }
 }

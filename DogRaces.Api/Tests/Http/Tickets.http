@@ -1,0 +1,85 @@
+@baseUrl = http://localhost:5095
+
+### ===== QUICK TICKET TEST WITH FETCHING - SIMPLE FLOW =====
+
+### 1. Reset wallet to $100
+POST {{baseUrl}}/api/wallet/reset
+Content-Type: application/json
+{
+  "startingBalance": 100.00
+}
+
+### 2. Check balance (should be $100)
+GET {{baseUrl}}/api/wallet/balance
+
+### 3. Check active races
+GET {{baseUrl}}/api/races/active
+
+### 4. Get all tickets (should be empty initially)
+GET {{baseUrl}}/api/tickets
+
+### 5. Place $10 bet
+POST {{baseUrl}}/api/tickets/place-bet
+Content-Type: application/json
+{
+  "totalStake": 10.0,
+  "bets": [
+    {
+      "raceOddsId": 1
+    }
+  ]
+}
+
+### 6. Check balance (should be $90)
+GET {{baseUrl}}/api/wallet/balance
+
+### 7. Get all tickets (should show 1 ticket)
+GET {{baseUrl}}/api/tickets
+
+### 8. Place another bet ($15)
+POST {{baseUrl}}/api/tickets/place-bet
+Content-Type: application/json
+{
+  "totalStake": 15.0,
+  "bets": [
+    {
+      "raceOddsId": 2
+    }
+  ]
+}
+
+### 9. Check balance (should be $75)
+GET {{baseUrl}}/api/wallet/balance
+
+### 10. Get all tickets (should show 2 tickets)
+GET {{baseUrl}}/api/tickets
+
+### 11. Get tickets with pagination (limit 1)
+GET {{baseUrl}}/api/tickets?limit=1
+
+### 12. Get tickets with status filter (Success)
+GET {{baseUrl}}/api/tickets?status=Success
+
+### 13. Try insufficient balance bet (should fail)
+POST {{baseUrl}}/api/tickets/place-bet
+Content-Type: application/json
+{
+  "totalStake": 200.0,
+  "bets": [
+    {
+      "raceOddsId": 3
+    }
+  ]
+}
+
+### 14. Verify balance unchanged (should still be $75)
+GET {{baseUrl}}/api/wallet/balance
+
+### 15. Verify ticket count unchanged (should still be 2)
+GET {{baseUrl}}/api/tickets
+
+### 16. Get tickets with different status filter (Won - should be empty)
+GET {{baseUrl}}/api/tickets?status=Won
+
+### 17. Get tickets with pagination and offset
+GET {{baseUrl}}/api/tickets?limit=1&offset=1

@@ -44,7 +44,7 @@ public class EnsureMinimumRacesHandler : IRequestHandler<EnsureMinimumRacesComma
     {
         // Use hardcoded values for now - can be made configurable later if needed
         var intervalSeconds = 5;  // 5 seconds between race end and next start
-        var durationInSeconds = 10;   // 10 second race duration
+        var durationInSeconds = 20;   // 20 second race duration
         
         // Find the latest scheduled race to determine next start time
         var latestRace = await _context.Races

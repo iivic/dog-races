@@ -26,6 +26,7 @@ app.UseHttpsRedirection();
 app.MapWalletEndpoints();
 app.MapRaceEndpoints();
 app.MapConfigurationEndpoints();
+app.MapTicketEndpoints();
 
 app.Run();
 

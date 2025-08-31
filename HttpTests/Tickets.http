@@ -1,0 +1,56 @@
+@baseUrl = http://localhost:5095
+
+### Place a bet on multiple races
+POST {{baseUrl}}/api/tickets/place-bet
+Content-Type: application/json
+
+{
+  "totalStake": 10.0,
+  "bets": [
+    {
+      "raceOddsId": 1
+    },
+    {
+      "raceOddsId": 8
+    }
+  ]
+}
+
+### Place a bet with invalid amount (too low)
+POST {{baseUrl}}/api/tickets/place-bet
+Content-Type: application/json
+
+{
+  "totalStake": 0.5,
+  "bets": [
+    {
+      "raceOddsId": 1
+    }
+  ]
+}
+
+### Place a valid single bet
+POST {{baseUrl}}/api/tickets/place-bet
+Content-Type: application/json
+
+{
+  "totalStake": 5.0,
+  "bets": [
+    {
+      "raceOddsId": 1
+    }
+  ]
+}
+
+### Place a bet on non-existent odds (should fail odds lookup)
+POST {{baseUrl}}/api/tickets/place-bet
+Content-Type: application/json
+
+{
+  "totalStake": 5.0,
+  "bets": [
+    {
+      "raceOddsId": 999
+    }
+  ]
+}

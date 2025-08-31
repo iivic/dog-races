@@ -27,11 +27,15 @@ public class RaceOddsConfiguration : IEntityTypeConfiguration<RaceOdds>
             .IsRequired()
             .HasColumnType("decimal(18,2)");
 
+        builder.Property(ro => ro.BetType)
+            .IsRequired()
+            .HasConversion<int>();
+
         builder.Property(ro => ro.CreatedAt)
             .IsRequired();
 
-        // Indexes
-        builder.HasIndex(ro => new { ro.RaceId, ro.Selection })
+        // Indexes - unique constraint includes bet type since we have multiple odds per selection
+        builder.HasIndex(ro => new { ro.RaceId, ro.Selection, ro.BetType })
             .IsUnique();
     }
 }

@@ -1,3 +1,5 @@
+using DogRaces.Domain.Enums;
+
 namespace DogRaces.Domain.Entities;
 
 /// <summary>
@@ -8,12 +10,13 @@ public class RaceOdds
     // Private parameterless constructor for EF Core
     private RaceOdds() { }
 
-    public RaceOdds(long id, long raceId, int selection, decimal odds)
+    public RaceOdds(long id, long raceId, int selection, decimal odds, BetType betType)
     {
         Id = id;
         RaceId = raceId;
         SetSelection(selection);
         SetOdds(odds);
+        BetType = betType;
         CreatedAt = DateTimeOffset.UtcNow;
     }
 
@@ -29,6 +32,11 @@ public class RaceOdds
     /// Odds value for this selection
     /// </summary>
     public decimal Odds { get; private set; }
+    
+    /// <summary>
+    /// Type of bet (Winner, Top2, Top3)
+    /// </summary>
+    public BetType BetType { get; private set; }
     
     public DateTimeOffset CreatedAt { get; private set; }
 
@@ -59,6 +67,6 @@ public class RaceOdds
     /// </summary>
     public string GetDisplayString()
     {
-        return $"Selection {Selection}: {Odds:F2}";
+        return $"Selection {Selection} ({BetType}): {Odds}";
     }
 }

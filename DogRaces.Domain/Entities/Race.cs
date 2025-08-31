@@ -122,22 +122,16 @@ public class Race
     }
 
     /// <summary>
-    /// Create and add RaceOdds entities for all 6 selections based on calculated odds
+    /// Create and add RaceOdds entities for all 6 selections and all 3 bet types using factory pattern
     /// </summary>
     public void CreateRaceOdds()
     {
-        var calculatedOdds = CalculateOddsFromSequence();
+        var factory = new RaceOddsFactory(RandomNumbers);
+        var generatedOdds = factory.CreateAllRaceOdds(Id);
         
-        foreach (var (selection, odds) in calculatedOdds)
+        foreach (var odds in generatedOdds)
         {
-            var raceOdds = new RaceOdds(
-                id: 0,
-                raceId: Id,
-                selection: selection,
-                odds: odds
-            );
-            
-            RaceOdds.Add(raceOdds);
+            RaceOdds.Add(odds);
         }
     }
     

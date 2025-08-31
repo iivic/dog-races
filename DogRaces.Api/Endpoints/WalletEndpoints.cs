@@ -21,9 +21,9 @@ public static class WalletEndpoints
             .WithTags("Wallet")
             .WithOpenApi();
 
-        wallet.MapGet("/status", GetWalletStatus)
-            .WithName("GetWalletStatus")
-            .WithSummary("Get wallet status and balance information");
+        wallet.MapGet("/balance", GetWalletStatus)
+            .WithName("GetWalletBalance")
+            .WithSummary("Get wallet balance and status information");
 
         wallet.MapGet("/transactions", GetTransactionHistory)
             .WithName("GetTransactionHistory")
@@ -33,19 +33,19 @@ public static class WalletEndpoints
             .WithName("ResetWallet")
             .WithSummary("Reset wallet with new starting balance");
 
-        wallet.MapPost("/test-reserve", TestReserveFunds)
-            .WithName("TestReserveFunds")
-            .WithSummary("Test reserving funds (for testing purposes)");
+        wallet.MapPost("/reserve", ReserveFunds)
+            .WithName("ReserveFunds")
+            .WithSummary("Reserve funds for a ticket");
 
-        wallet.MapPost("/test-release", TestReleaseFunds)
-            .WithName("TestReleaseFunds")
-            .WithSummary("Test releasing reserved funds (for testing purposes)");
+        wallet.MapPost("/release", ReleaseFunds)
+            .WithName("ReleaseFunds")
+            .WithSummary("Release reserved funds for a ticket");
 
         return app;
     }
 
     /// <summary>
-    /// Get wallet status and balance information
+    /// Get wallet balance and status information
     /// </summary>
     private static async Task<IResult> GetWalletStatus(IMediator mediator)
     {
@@ -72,18 +72,18 @@ public static class WalletEndpoints
     }
 
     /// <summary>
-    /// Test reserving funds for a ticket
+    /// Reserve funds for a ticket
     /// </summary>
-    private static async Task<IResult> TestReserveFunds(ReserveFundsCommand request, IMediator mediator)
+    private static async Task<IResult> ReserveFunds(ReserveFundsCommand request, IMediator mediator)
     {
         var response = await mediator.Send(request);
         return Results.Ok(response);
     }
 
     /// <summary>
-    /// Test releasing reserved funds for a ticket
+    /// Release reserved funds for a ticket
     /// </summary>
-    private static async Task<IResult> TestReleaseFunds(ReleaseFundsCommand request, IMediator mediator)
+    private static async Task<IResult> ReleaseFunds(ReleaseFundsCommand request, IMediator mediator)
     {
         var response = await mediator.Send(request);
         return Results.Ok(response);

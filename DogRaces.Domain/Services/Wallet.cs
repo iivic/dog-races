@@ -70,6 +70,9 @@ public class Wallet
     /// </summary>
     public bool TryReserve(decimal amount, Guid ticketId)
     {
+        if (amount <= 0)
+            return false;
+            
         if (!HasSufficientBalance(amount))
             return false;
 
@@ -87,6 +90,9 @@ public class Wallet
     /// </summary>
     public bool TryCommit(decimal amount, Guid ticketId)
     {
+        if (amount <= 0)
+            return false;
+            
         if (ReservedAmount < amount)
             return false;
 
@@ -103,6 +109,9 @@ public class Wallet
     /// </summary>
     public void Release(decimal amount, Guid ticketId)
     {
+        if (amount <= 0)
+            return;
+            
         var releaseAmount = Math.Min(amount, ReservedAmount);
         ReservedAmount -= releaseAmount;
         Balance += releaseAmount;
@@ -116,6 +125,9 @@ public class Wallet
     /// </summary>
     public void AddPayout(decimal amount, Guid ticketId)
     {
+        if (amount <= 0)
+            return;
+            
         Balance += amount;
         
         LogTransaction(WalletTransactionType.Payout, amount, 
